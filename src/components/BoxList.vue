@@ -54,7 +54,6 @@ export default {
       })
       .then(response => {
         var data = response.data.data;
-        console.log(data);
         //this.boxs = data;
       });
   },

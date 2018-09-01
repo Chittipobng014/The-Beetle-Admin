@@ -15,7 +15,22 @@
                         <div class="sidebartitle center">Instruction</div>
                         <div class="content-container">
                             <div class="sidebarcontent sidebarcontentText">
-                              <div class="inActive">1. Select Menu</div>
+                              <transition name="fade">
+                                <div v-if="currentPage == 'menu'" >
+                                  <div class="inActive">1. Select Menu</div>
+                                </div>
+                                <div v-if="currentPage == 'boxview' || currentPage == 'boxlist'" ref="boxview" >
+                                  <div class="inActive" id="0" ref="1">1. Select a Beetle box</div>
+                                  <div id="1" ref="2">2. Comfirm renting</div>
+                                  <div id="2" ref="3">3. Face Recognition</div>
+                                  <div id="3" ref="4">4. Set passcode</div>
+                                  <div id="4" ref="5">5. Confirm passcode</div>
+                                  <div id="5" ref="6">6. Success</div>
+                                  <div style="position: absolute;    bottom: 0;   width: 85%">
+                                    <v-btn v-on:click="logging" style=" width: 100%; height: 6vh; background-color: #3B5998; margin: 8% 0% 8% 0%; font-size: 100%; color: #FFFFFF;" class="menu-btn">Back to menu</v-btn>
+                                  </div>
+                                </div>             
+                              </transition>                                             
                             </div>
                         </div>                            
                     </v-card>
@@ -58,8 +73,43 @@ export default {
   },
   data() {
     return {
-      
+      boxviewDiv: null
     };
+  },
+  computed: {
+    currentPage: function() {
+      var page = this.$route.name;
+      return page;
+    },    
+  },
+  watch: {
+    $route: function(to, from) {
+      if (this.$route.path.split("/")[1] == "box") {
+        var div = this.boxviewDiv.children;
+        var stepStr = to.path.split("/")[2];
+        var step = parseInt(stepStr);
+        var previusStepStr = from.path.split("/")[2];
+        var previusStep = parseInt(previusStepStr);
+        if (!previusStep) {
+          
+        } else {
+          div[step - 1].classList.add("inActive");
+          div[previusStep - 1].classList.remove("inActive");
+        }        
+      }
+    }
+  },
+  methods: {
+    logging: function() {
+      var div = this.boxviewDiv.children;
+      console.log(div);
+    },
+    backToMenu: function(){
+
+    }
+  },
+  mounted() {
+    this.boxviewDiv = this.$refs["boxview"]
   }
 };
 </script>
@@ -169,7 +219,8 @@ export default {
 .sidebarcontent {
   background-color: #eae4e4;
   min-height: 74vh;
-  padding: 8% 8% 0% 8%;
+  padding: 8% 8% 8% 8%;
+  position: relative;
 }
 
 .inActive {
@@ -186,7 +237,7 @@ export default {
 .center {
   text-align: center;
 }
-
+ 
 .content {
   min-height: 86vh;
 }
@@ -195,5 +246,13 @@ export default {
   justify-content: center;
   align-items: center;
   display: flex;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

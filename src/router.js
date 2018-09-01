@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import MainPage from './components/MainPage'
 import BoxList from './components/BoxList'
 import Menu from './components/Menu'
+import BoxView from './components/BoxView'
 
 Vue.use(VueRouter)
 
@@ -18,11 +19,25 @@ export default new VueRouter({
         component: Menu
       },
       {
-        name: 'boxlist',
+        name: 'boxview',
         path: 'box',
-        component: BoxList,
+        component: BoxView,
         children: [
-
+          {
+            name: 'boxlist',
+            path: '1',
+            component: BoxList
+          },
+          {
+            name: 'boxlist',
+            path: '2',
+            component: BoxList
+          },
+          {
+            name: 'boxlist',
+            path: '3',
+            component: BoxList
+          }
         ]
       }
     ]

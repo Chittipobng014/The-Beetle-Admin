@@ -1,7 +1,7 @@
 <template>
     <div class="container center content" id="menu">
         <div>
-            <v-btn class="menu-btn">Rent a box</v-btn>
+            <v-btn v-on:click="nextTo('/box/1')" class="menu-btn">Rent a box</v-btn>
         </div>
         <div>
             <v-btn class="menu-btn">Open a box</v-btn>
@@ -12,6 +12,13 @@
 <script>
 export default {
     name: 'mainMenu',
+    methods: {
+        nextTo: function(path){
+            this.$router.push({
+                path: path
+            })
+        }
+    }
 }
 </script>
 
