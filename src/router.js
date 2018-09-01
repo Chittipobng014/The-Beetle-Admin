@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import MainPage from './components/MainPage'
-import BoxRenting from './components/BoxRenting'
+import BoxList from './components/BoxList'
 import Menu from './components/Menu'
 
 Vue.use(VueRouter)
@@ -13,15 +13,19 @@ export default new VueRouter({
     component: MainPage,
     children:[
       {
-        path:'menu',
+        name: 'menu',
+        path: 'menu',
         component: Menu
+      },
+      {
+        name: 'boxlist',
+        path: 'box',
+        component: BoxList,
+        children: [
+
+        ]
       }
     ]
-  },
-  {
-    path: '/renting/:id',
-    name: 'BoxRenting',
-    component: BoxRenting
   }
   ]
 })
