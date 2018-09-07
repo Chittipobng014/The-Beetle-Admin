@@ -113,10 +113,8 @@ export default {
   },
   watch: {
     $route: async function(to, from) {
-      let boxview = await this.$store.state.boxview
-            
-      let menu = await this.$store.state.menu
-      
+      let boxview = await this.$store.state.boxview            
+      let menu = await this.$store.state.menu      
       if (boxview != this.$store.state.boxview || menu != this.$store.state.menu) {
         boxview = this.$store.state.boxview
         menu = this.$store.state.menu
