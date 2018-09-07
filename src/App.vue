@@ -3,15 +3,19 @@
 </template>
 
 <script>
-
 export default {
-  name: 'app',
-}
+  name: "app",
+  async beforeMount() {
+    this.$router.push({
+      path: '/menu'
+    });
+  }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-ons-splitter-side[side=left][animation=overlay] {
-  border-right: 1px solid #BBB;
+ons-splitter-side[side="left"][animation="overlay"] {
+  border-right: 1px solid #bbb;
 }
 </style>
