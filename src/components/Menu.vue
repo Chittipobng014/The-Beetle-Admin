@@ -18,6 +18,12 @@ export default {
                 path: path
             })
         }
+    },
+    async beforeMount() {
+        await this.$store.commit('menu', true) 
+    },
+    async beforeDestroy() {
+        await this.$store.commit('menu', false)
     }
 }
 </script>

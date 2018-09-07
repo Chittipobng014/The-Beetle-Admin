@@ -59,6 +59,9 @@ export default {
   },
   components: {
     Box
+  },
+  mounted() {
+    
   }
 };
 </script>

@@ -15,11 +15,13 @@
                         <div class="sidebartitle center">Instruction</div>
                         <div class="content-container">
                             <div class="sidebarcontent sidebarcontentText">
-                              <transition name="fade">
+                              <transition name="slide-y-transition">
                                 <div v-if="currentPage == 'menu'" >
                                   <div class="inActive">1. Select Menu</div>
                                 </div>
-                                <div v-if="currentPage == 'boxview' || currentPage == 'boxlist'" ref="boxview" >
+                              </transition>
+                              <transition name="fade">  
+                                <div v-if="currentPage == 'box'" ref="boxview" >
                                   <div class="inActive" id="0" ref="1">1. Select a Beetle box</div>
                                   <div id="1" ref="2">2. Comfirm renting</div>
                                   <div id="2" ref="3">3. Face Recognition</div>
@@ -27,7 +29,7 @@
                                   <div id="4" ref="5">5. Confirm passcode</div>
                                   <div id="5" ref="6">6. Success</div>
                                   <div style="position: absolute;    bottom: 0;   width: 85%">
-                                    <v-btn v-on:click="logging" style=" width: 100%; height: 6vh; background-color: #3B5998; margin: 8% 0% 8% 0%; font-size: 100%; color: #FFFFFF;" class="menu-btn">Back to menu</v-btn>
+                                    <v-btn v-on:click="backToMenu" style=" width: 100%; height: 6vh; background-color: #3B5998; margin: 8% 0% 8% 0%; font-size: 100%; color: #FFFFFF;" class="menu-btn">Back to menu</v-btn>
                                   </div>
                                 </div>             
                               </transition>                                             
@@ -46,24 +48,51 @@
                     </v-flex>
                     <v-flex xs10>
                       <div class="h-center" style="min-height: 14vh; max-height: 14vh; padding: 4% 4% 4% 0%;">
-                        <div class="navHeader h-center">
+                        <div v-if="currentPage == 'menu'" class="navHeader h-center">
                           Welcome
+                        </div>
+                        <div v-if="currentPage == 'box'" class="navHeader h-center">
+                          Select a Beetle box
                         </div>
                       </div>
                     </v-flex>
                   </v-layout>                  
                 </div>
                 <div class="content">
+                  <transition name="scale-transition">
                     <router-view></router-view>
+                  </transition>
                 </div>                    
             </v-flex>
         </v-layout> 
+        <v-dialog
+          v-model="dialog"
+          persistent
+          width="300"
+          lazy
+        >
+          <v-card
+            color="indigo"
+            dark
+          >
+            <v-card-text>
+              Loading...
+              <v-progress-linear
+                indeterminate
+                color="white"
+                class="mb-0"
+              ></v-progress-linear>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
 <script>
 import BoxList from "./BoxList";
 import OutlineLabel from "./OutlineLabel";
+import { async } from 'q';
+import { setTimeout } from 'timers';
 
 export default {
   name: "mainpage",
@@ -73,19 +102,27 @@ export default {
   },
   data() {
     return {
-      boxviewDiv: null
+      dialog: false
     };
   },
   computed: {
     currentPage: function() {
-      var page = this.$route.name;
+      var page = this.$route.path.split("/")[1];
       return page;
-    },    
+    },
   },
   watch: {
-    $route: function(to, from) {
-      if (this.$route.path.split("/")[1] == "box") {
-        var div = this.boxviewDiv.children;
+    $route: async function(to, from) {
+      let boxview = await this.$store.state.boxview
+            
+      let menu = await this.$store.state.menu
+      
+      if (boxview != this.$store.state.boxview || menu != this.$store.state.menu) {
+        boxview = this.$store.state.boxview
+        menu = this.$store.state.menu
+      }
+      if (boxview == true) {
+        var div = await this.$refs.boxview.children;
         var stepStr = to.path.split("/")[2];
         var step = parseInt(stepStr);
         var previusStepStr = from.path.split("/")[2];
@@ -96,20 +133,24 @@ export default {
           div[step - 1].classList.add("inActive");
           div[previusStep - 1].classList.remove("inActive");
         }        
+      } else if (menu == true) {
+
       }
-    }
+    },
   },
   methods: {
     logging: function() {
-      var div = this.boxviewDiv.children;
-      console.log(div);
+     
     },
     backToMenu: function(){
-
+      this.$router.go(-1)
     }
   },
-  mounted() {
-    this.boxviewDiv = this.$refs["boxview"]
+  async beforeMount() {
+    this.dialog = true;
+    setTimeout(() => {
+      this.dialog = false
+    }, 3200);
   }
 };
 </script>

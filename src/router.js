@@ -29,12 +29,12 @@ export default new VueRouter({
             component: BoxList
           },
           {
-            name: 'boxlist',
+            name: 'renting',
             path: '2',
             component: BoxList
           },
           {
-            name: 'boxlist',
+            name: 'faceReg',
             path: '3',
             component: BoxList
           }
