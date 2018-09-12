@@ -4,6 +4,7 @@ import MainPage from './components/MainPage'
 import BoxList from './components/BoxList'
 import Menu from './components/Menu'
 import BoxView from './components/BoxView'
+import BoxRenting from './components/BoxRenting'
 
 Vue.use(VueRouter)
 
@@ -30,8 +31,8 @@ export default new VueRouter({
           },
           {
             name: 'renting',
-            path: '2',
-            component: BoxList
+            path: '2/:id',
+            component: BoxRenting
           },
           {
             name: 'faceReg',
