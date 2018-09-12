@@ -149,10 +149,10 @@ export default {
     setTimeout(() => {
       this.dialog = false
     }, 3200);
-    console.log(navigator.camera);    
   },
   mounted(){
-    console.log(navigator.camera);
+    
+    
   }
 };
 </script>
