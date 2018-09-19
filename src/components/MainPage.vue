@@ -150,8 +150,7 @@ export default {
       this.dialog = false
     }, 3200);
   },
-  mounted(){
-    
+  mounted(){    
     
   }
 };
