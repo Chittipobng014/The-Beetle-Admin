@@ -6,7 +6,10 @@
 export default {
   name: "previewcam",
   data() {
-    return {};
+    return {
+      faceid: "",
+      state: 'standby'
+    };
   },
   methods: {
     startCameraAbove: function() {
@@ -37,7 +40,7 @@ export default {
     },
     takePicture: function() {
       CameraPreview.takePicture(function(imgData) {
-        console.log(imgData);        
+        console.log(imgData);
       });
     },
     switchCamera: function() {
@@ -86,6 +89,18 @@ export default {
   },
   mounted() {
     //this.hide();
+  },
+  watch:{
+    state: function(payload){
+      if (payload == 'process') {
+        this.show();
+        setTimeout(() => {
+          CameraPreview.takePicture(function(imgData) {
+            //face reg then set state to done
+          });
+        }, 10000);
+      }
+    }
   }
 };
 </script>
