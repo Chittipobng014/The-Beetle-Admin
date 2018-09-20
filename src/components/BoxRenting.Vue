@@ -14,7 +14,7 @@
             <div style="margin-bottom: 25px"><v-btn @click="this.rent" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
             <div><v-btn @click="this.hide" style="width: 330px; height: 100px; font-size: 28px">Back to box select</v-btn></div>
         </div>
-        <preview-cam ref="cam"></preview-cam>
+        <preview-cam ref="cam" ></preview-cam>
     </div>
 </template>
 

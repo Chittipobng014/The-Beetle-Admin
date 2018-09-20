@@ -59,7 +59,7 @@
                   </v-layout>                  
                 </div>
                 <div class="content">
-                  <transition name="scale-transition">
+                  <transition name="fade">
                     <router-view></router-view>
                   </transition>
                 </div>                    
@@ -102,7 +102,8 @@ export default {
   },
   data() {
     return {
-      dialog: false
+      dialog: false,
+      boxs: [],
     };
   },
   computed: {
@@ -137,15 +138,19 @@ export default {
     },
   },
   methods: {
-    logging: function() {
-     
-    },
     backToMenu: function(){
       this.$router.go(-1)
     }
   },
   async beforeMount() {
     this.dialog = true;
+    /*const devices = ble.scan([], 5, async (device) => {
+      console.log(JSON.stringify(device));
+      return device
+    }, (err) => {
+      console.log(JSON.stringify(err));      
+    });
+    this.boxs = devices;*/
     setTimeout(() => {
       this.dialog = false
     }, 3200);
