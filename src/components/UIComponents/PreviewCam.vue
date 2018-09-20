@@ -4,11 +4,10 @@
 
 <script>
 export default {
-  name: "previewcam",  
+  name: "previewcam",
   data() {
     return {
-      faceid: "",
-      state: 'standby'
+      faceid: ""
     };
   },
   methods: {
@@ -84,21 +83,40 @@ export default {
       });
     }
   },
-  beforeMount() {
-    this.startCameraAbove();
+  async beforeMount() {
+    try {
+      const start = await this.startCameraAbove();
+      this.$store.commit("setFaceRegState", "standBy");
+      this.hide();
+    } catch (error) {
+      console.log(error);
+    }
   },
   mounted() {
     //this.hide();
   },
-  watch:{
-    state: function(payload){
-      if (payload == 'process') {
+  computed: {
+    state: function() {
+      let state = this.$store.faceRegStatus;
+      return state;
+    }
+  },
+  watch: {
+    state: function(preChange, postChange) {
+      var state = postChange;
+      if (state == "begin") {
         this.show();
         setTimeout(() => {
           CameraPreview.takePicture(function(imgData) {
-            //face reg then set state to done
+            //Call Face Comparision API
+
+           //face reg then set state to complete
+           this.$store.commit('setFaceRegState', 'complete');
           });
-        }, 10000);
+        }, 5000);
+      } else if (state == "complete") {
+        this.hide();
+        this.$router.push('3');
       }
     }
   }

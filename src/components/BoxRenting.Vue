@@ -11,15 +11,15 @@
                 style="width: 95%; "
                 v-model="tel"
           ></v-text-field></div>
-            <div style="margin-bottom: 25px"><v-btn @click="this.rent" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
-            <div><v-btn @click="this.hide" style="width: 330px; height: 100px; font-size: 28px">Back to box select</v-btn></div>
+            <div style="margin-bottom: 25px"><v-btn @click="this.goto3" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
+            <div><v-btn @click="this.goback" style="width: 330px; height: 100px; font-size: 28px">Back to box select</v-btn></div>
         </div>
         <preview-cam ref="cam" ></preview-cam>
     </div>
 </template>
 
 <script>
-import PreviewCam from "./UIcomponents/PreviewCam";
+import PreviewCam from "./UIcomponents/PreviewCam"
 
 export default {
   name: "boxrenting",
@@ -32,13 +32,17 @@ export default {
   mounted() {},
   methods: {
     rent: function() {
-      if (this.tel.length != 0) {
-        this.$refs.state = "process"
+      if (this.tel.length != 0 && this.$store.faceRegStatus == "standBy") {
+        this.$store.commit('setFaceRegState', 'begin')
       }
     },
-    hide: function() {
-      console.log("show");
-      this.$refs.cam.hide();
+    goback: function () {
+      this.$router.go(-1)
+    },
+    goto3: function () {     
+      this.$router.push({
+        path: '/box/3'
+      })
     }
   },
   computed: {

@@ -156,7 +156,7 @@ export default {
     }, 3200);
   },
   mounted(){    
-    
+    console.log(this.boxs);    
   }
 };
 </script>

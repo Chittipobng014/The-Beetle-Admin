@@ -5,6 +5,7 @@ import BoxList from './components/BoxList'
 import Menu from './components/Menu'
 import BoxView from './components/BoxView'
 import BoxRenting from './components/BoxRenting'
+import PasscodePad from './components/UIcomponents/PasscodePad'
 
 Vue.use(VueRouter)
 
@@ -35,9 +36,9 @@ export default new VueRouter({
             component: BoxRenting
           },
           {
-            name: 'faceReg',
+            name: 'passcode',
             path: '3',
-            component: BoxList
+            component: PasscodePad
           }
         ]
       }
