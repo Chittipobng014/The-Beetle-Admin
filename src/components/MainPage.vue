@@ -111,6 +111,10 @@ export default {
       var page = this.$route.path.split("/")[1];
       return page;
     },
+    state: function(){
+      var state = this.$stror.state;
+      return state
+    }
   },
   watch: {
     $route: async function(to, from) {

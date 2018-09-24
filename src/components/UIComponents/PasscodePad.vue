@@ -3,13 +3,69 @@
         <div class="background">
             <div class="center">
                 <v-layout row wrap>
+                    <v-flex v-if="code.length == 0" class="h-center" style="margin-bottom: 15px" xs12>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>                        
+                    </v-flex>
+                    <v-flex v-if="code.length == 1" class="h-center" style="margin-bottom: 15px" xs12>
+                        <div class="dashed">•</div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>                        
+                    </v-flex>
+                    <v-flex v-if="code.length == 2" class="h-center" style="margin-bottom: 15px" xs12>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>                        
+                    </v-flex>
+                    <v-flex v-if="code.length == 3" class="h-center" style="margin-bottom: 15px" xs12>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>                        
+                    </v-flex>
+                     <v-flex v-if="code.length == 4" class="h-center" style="margin-bottom: 15px" xs12>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed"></div>
+                        <div class="dashed"></div>                        
+                    </v-flex>
+                    <v-flex v-if="code.length == 5" class="h-center" style="margin-bottom: 15px" xs12>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed"></div>                        
+                    </v-flex>
+                    <v-flex v-if="code.length == 6" class="h-center" style="margin-bottom: 15px" xs12>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>
+                        <div class="dashed">•</div>                        
+                    </v-flex>
                     <v-flex class="flex-padding circle" v-for="i in 9" :key="i" xs4>
-                        <div class="circleNo" @click="addCode(i)">
+                        <div class="circleNo ripple" @click="addCode(i)">
                             {{i}}
                         </div>
                     </v-flex>
                     <v-flex row class="circle">
-                        <div class="circleNo" @click="addCode(0)" >
+                        <div class="circleNo ripple" @click="addCode(0)" >
                             0
                         </div>
                     </v-flex>
@@ -24,31 +80,25 @@ export default {
   name: "passcodepad",
   data: function() {
     return {
-      code: [],
-      firstPasscode: "",
-      rePasscode: "",
-      state: "first"
+      code: []
     };
   },
   methods: {
     addCode: function(num) {
-      if (this.state == "first") {
-        if (this.code.length == 6) {
-          this.firstPasscode = this.passcode;
-          this.passcode = "";
-          this.code = [];
-          this.state = "re";
-        } else {
-          this.code.push(num);
-        }
-      } else if (this.state == "re") {
-        console.log(this.code);
-      }
+      this.code.push(num);
     }
   },
   watch: {
     passcode: function(change) {
       console.log(change);
+      if (this.code.length == 6) {
+        //set state and send data to Controller
+        
+        //clear slot
+        setTimeout(() => {
+          this.code = [];
+        }, 300);
+      }
     }
   },
   computed: {
@@ -97,6 +147,43 @@ export default {
 }
 
 .circle {
-  padding: 15px;
+  padding: 10px;
+}
+
+.dashed {
+  font-size: 60px;
+  width: 50px;
+  height: 75px;
+  border-bottom: 1px solid black;
+  margin: 8px;
+}
+
+.ripple {
+  position: relative;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+.ripple:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform 0.1s, opacity 1s;
+}
+
+.ripple:active:after {
+  transform: scale(0, 0);
+  opacity: 0.3;
+  transition: 0s;
 }
 </style>
