@@ -144,19 +144,12 @@ export default {
   },
   async beforeMount() {
     this.dialog = true;
-    /*const devices = ble.scan([], 5, async (device) => {
-      console.log(JSON.stringify(device));
-      return device
-    }, (err) => {
-      console.log(JSON.stringify(err));      
-    });
-    this.boxs = devices;*/
     setTimeout(() => {
       this.dialog = false
     }, 3200);
   },
-  mounted(){    
-    console.log(this.boxs);    
+  mounted(){
+    
   }
 };
 </script>
