@@ -16,12 +16,12 @@
                         <div class="content-container">
                             <div class="sidebarcontent sidebarcontentText">
                               <transition name="slide-y-transition">
-                                <div v-if="currentPage == 'menu'" >
+                                <div v-if="isMenu == 'hello'" >
                                   <div class="inActive">1. Select Menu</div>
                                 </div>
                               </transition>
                               <transition name="fade">  
-                                <div v-if="currentPage == 'box'" ref="boxview" >
+                                <div v-if="isMenu == 'list' || isMenu == 'renting'" ref="boxview" >
                                   <div class="inActive" id="0" ref="1">1. Select a Beetle box</div>
                                   <div id="1" ref="2">2. Comfirm renting</div>
                                   <div id="2" ref="3">3. Face Recognition</div>
@@ -48,7 +48,7 @@
                     </v-flex>
                     <v-flex xs10>
                       <div class="h-center" style="min-height: 14vh; max-height: 14vh; padding: 4% 4% 4% 0%;">
-                        <div v-if="currentPage == 'menu'" class="navHeader h-center">
+                        <div v-if="isMenu == 'menu'" class="navHeader h-center">
                           Welcome
                         </div>
                         <div v-if="currentPage == 'box'" class="navHeader h-center">
@@ -60,7 +60,7 @@
                 </div>
                 <div class="content">
                   <transition name="fade">
-                    <router-view></router-view>
+                    <component v-bind:is="isMenu"></component>
                   </transition>
                 </div>                    
             </v-flex>
@@ -89,16 +89,21 @@
 </template>
 
 <script>
-import BoxList from "./BoxList";
 import OutlineLabel from "./OutlineLabel";
-import { async } from 'q';
-import { setTimeout } from 'timers';
+import { mapGetters, mapActions} from "vuex"
+import {
+  Menu,
+  BoxList,
+  BoxRenting
+} from "./index.js";
 
 export default {
   name: "mainpage",
   components: {
-    BoxList,
-    OutlineLabel
+    "hello": Menu,
+    "renting": BoxRenting,
+    "list": BoxList,
+    OutlineLabel,
   },
   data() {
     return {
@@ -107,6 +112,11 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      "isMenu",
+      "isStep",
+      "data"
+    ]),
     currentPage: function() {
       var page = this.$route.path.split("/")[1];
       return page;
@@ -136,11 +146,30 @@ export default {
 
       }
     },
+    isMenu: function(menu){
+      console.log(menu);
+    },
+    isStep: function(step){
+      console.log(step);
+      
+      if (this.isMenu == "renting" || this.isMenu == 'list') {
+        let step = parseInt(step);
+        let instruction = this.$refs.boxview
+        console.log(instruction)
+        
+        //let isNotStep = instruction.filters((anotherStep) => anotherStep)
+      }
+    }
   },
   methods: {
+    ...mapActions([
+      "setMenu",
+      "setStep",
+      "setData"
+    ]),
     backToMenu: function(){
-      this.$router.go(-1)
-    }
+      this.setMenu("hello")
+    },
   },
   async beforeMount() {
     this.dialog = true;

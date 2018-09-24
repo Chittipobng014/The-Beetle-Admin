@@ -12,6 +12,7 @@
 
 <script>
 import Box from "./Box";
+import { mapActions } from 'vuex';
 
 export default {
   name: 'boxlist',
@@ -43,6 +44,11 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "setMenu",
+      "setStep",
+      "setData"
+    ]),
     onScroll(e) {
       this.offsetTop = e.target.scrollTop;
     }
@@ -61,7 +67,7 @@ export default {
     Box
   },
   mounted() {
-    
+    this.setStep("1")
   }
 };
 </script>

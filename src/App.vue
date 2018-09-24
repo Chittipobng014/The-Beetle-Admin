@@ -6,9 +6,6 @@
 export default {
   name: "app",
   async beforeMount() {
-    this.$router.push({
-      path: '/menu'
-    });
   }
 };
 </script>

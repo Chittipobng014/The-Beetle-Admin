@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     boxview: false,
     menu: false,
-    status: {menu: "", step: "", data: {}}
+    status: {menu: "hello", step: "", data: {}}
   },
   getters: {
     isMenu: state => state.status.menu,
@@ -22,13 +22,13 @@ export default new Vuex.Store({
       state.menu = payload;
     },
     SET_MENU(state, payload){
-      state.isMenu = payload;
+      state.status.menu = payload;
     },
     SET_STEP(state, payload){
-      state.isStep = payload;
+      state.status.step = payload;
     },
     SET_DATA(state, payload){
-      state.data = payload;
+      state.status.data = payload;
     }
   },
   actions: {
