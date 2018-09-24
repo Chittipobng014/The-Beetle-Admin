@@ -12,10 +12,19 @@ Vue.use(VueAxios, axios)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-new Vue({
+const app = new Vue({
   el: '#app',
   router,
   store,
   template: '<App/>',
-  components: { App }
+  components: { App },
+  methods:{
+    init: function() {
+      // ble start scan
+    }
+  }
+})
+
+document.addEventListener('deviceready', app.init, function (err) {
+  console.log(err);
 })
