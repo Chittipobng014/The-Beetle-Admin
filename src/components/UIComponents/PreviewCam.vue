@@ -6,6 +6,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { setTimeout } from 'timers';
 
 export default {
   name: "faceReg",
@@ -102,8 +103,12 @@ export default {
   },
   mounted() {
     //this.show()
-    this.setMenu("passcode");
-    this.setStep("4");
+    this.startCameraAbove();
+    setTimeout(() => {
+      this.setMenu("passcode");
+      this.setStep("4");
+    }, 3000)
+
   },
 };
 </script>
