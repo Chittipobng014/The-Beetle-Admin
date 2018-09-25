@@ -1,16 +1,21 @@
 <template>
-    
+    <div>
+      
+    </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
-  name: "previewcam",
+  name: "faceReg",
   data() {
     return {
       faceid: ""
     };
   },
   methods: {
+    ...mapActions(["setMenu", "setStep", "setData"]),
     startCameraAbove: function() {
       CameraPreview.startCamera({
         x: 50,
@@ -18,7 +23,7 @@ export default {
         width: 819,
         height: 614,
         toBack: false,
-        previewDrag: true,
+        previewDrag: false,
         tapPhoto: true
       });
     },
@@ -83,43 +88,23 @@ export default {
       });
     }
   },
-  async beforeMount() {
-    try {
-      const start = await this.startCameraAbove();
-      this.$store.commit("setFaceRegState", "standBy");
-      this.hide();
-    } catch (error) {
-      console.log(error);
-    }
-  },
-  mounted() {
-    //this.hide();
-  },
   computed: {
-    state: function() {
-      let state = this.$store.faceRegStatus;
-      return state;
-    }
+    ...mapGetters(["isMenu", "isStep", "getData"])
   },
   watch: {
-    state: function(preChange, postChange) {
-      var state = postChange;
-      if (state == "begin") {
-        this.show();
-        setTimeout(() => {
-          CameraPreview.takePicture(function(imgData) {
-            //Call Face Comparision API
-
-           //face reg then set state to complete
-           this.$store.commit('setFaceRegState', 'complete');
-          });
-        }, 5000);
-      } else if (state == "complete") {
-        this.hide();
-        this.$router.push('3');
-      }
-    }
-  }
+    // isMenu: function(menu) {
+    //   console.log(menu);
+      
+    //   if (menu == "faceReg") {
+    //     this.show();
+    //   }
+    // }
+  },
+  mounted() {
+    //this.show()
+    this.setMenu("passcode");
+    this.setStep("4");
+  },
 };
 </script>
 

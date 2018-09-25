@@ -11,15 +11,14 @@
                 style="width: 95%; "
                 v-model="tel"
           ></v-text-field></div>
-            <div style="margin-bottom: 25px"><v-btn @click="this.goto3" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
+            <div style="margin-bottom: 25px"><v-btn @click="this.next" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
             <div><v-btn @click="this.goback" style="width: 330px; height: 100px; font-size: 28px">Back to box select</v-btn></div>
         </div>
-        <preview-cam ref="cam" ></preview-cam>
     </div>
 </template>
 
 <script>
-import PreviewCam from "./UIcomponents/PreviewCam"
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "boxrenting",
@@ -31,33 +30,40 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapActions(["setMenu", "setStep", "setData"]),
     rent: function() {
-      if (this.tel.length != 0 && this.$store.faceRegStatus == "standBy") {
-        this.$store.commit('setFaceRegState', 'begin')
+      if (this.tel.length != 0) {
+        this.setMenu("faceReg");
+        this.setStep("3");
       }
     },
-    goback: function () {
-      this.$router.go(-1)
+    goback: function() {
+      this.setMenu("list");
+      this.setStep("1");
     },
-    goto3: function () {     
+    goto3: function() {
       this.$router.push({
-        path: '/box/3'
-      })
+        path: "/box/3"
+      });
+    },
+    next: function() {
+      if (this.tel.length >= 8) {
+        this.setMenu("faceReg");
+        this.setStep("3");
+      } else {
+        console.log('Tel min > 8');
+      }
     }
   },
   computed: {
+    ...mapGetters(["isMenu", "isStep", "getData"]),
     faceid: function() {
       let faceid = this.$refs.cam.faceid;
       return faceid;
     }
   },
-  components: {
-    PreviewCam
-  },
   watch: {
-    state: function(payload){
-      
-    }
+    state: function(payload) {}
   }
 };
 </script>

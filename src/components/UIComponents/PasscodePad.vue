@@ -76,6 +76,8 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "passcodepad",
   data: function() {
@@ -84,24 +86,42 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["setMenu", "setStep", "setData", "setPasscode", "setRepasscode"]),
     addCode: function(num) {
       this.code.push(num);
     }
   },
   watch: {
     passcode: function(change) {
-      console.log(change);
       if (this.code.length == 6) {
-        //set state and send data to Controller
-        
-        //clear slot
-        setTimeout(() => {
-          this.code = [];
-        }, 300);
+        if (this.isMenu == "passcode") {
+          //set state and send data to Controller
+          this.setPasscode(this.passcode);
+          this.setMenu("setpasscode");
+          //clear slot
+          setTimeout(() => {
+            this.code = [];
+          }, 500);
+        } else if (this.isMenu == "repasscode") {
+          //set state and send data to Controller
+          this.setRepasscode(this.passcode);
+          this.setMenu("checkpasscode");
+          //clear slot
+          setTimeout(() => {
+            this.code = [];
+          }, 500);
+        }
       }
     }
   },
   computed: {
+    ...mapGetters([
+      "isMenu",
+      "isStep",
+      "getData",
+      "getPasscode",
+      "getRepasscode"
+    ]),
     passcode: function() {
       let passcode = "";
       this.code.forEach(i => {

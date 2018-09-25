@@ -20,7 +20,6 @@ export default {
         "setStep"
     ]),
     nextTolist: function() {
-      this.setStep("1");
       this.setMenu("list");
     },
     nextToOpen: function() {

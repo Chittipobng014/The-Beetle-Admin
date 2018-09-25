@@ -9,7 +9,7 @@
         </v-card>
     </div> 
 </template>
-
+ 
 <script>
 import Box from "./Box";
 import { mapActions } from 'vuex';

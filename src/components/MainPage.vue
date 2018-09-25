@@ -21,16 +21,8 @@
                                 </div>
                               </transition>
                               <transition name="fade">  
-                                <div v-if="isMenu == 'list' || isMenu == 'renting'" ref="boxview" >
-                                  <div class="inActive" id="0" ref="1">1. Select a Beetle box</div>
-                                  <div id="1" ref="2">2. Comfirm renting</div>
-                                  <div id="2" ref="3">3. Face Recognition</div>
-                                  <div id="3" ref="4">4. Set passcode</div>
-                                  <div id="4" ref="5">5. Confirm passcode</div>
-                                  <div id="5" ref="6">6. Success</div>
-                                  <div style="position: absolute;    bottom: 0;   width: 85%">
-                                    <v-btn v-on:click="backToMenu" style=" width: 100%; height: 6vh; background-color: #3B5998; margin: 8% 0% 8% 0%; font-size: 100%; color: #FFFFFF;" class="menu-btn">Back to menu</v-btn>
-                                  </div>
+                                <div v-if="isMenu == 'list' || isMenu == 'renting' || isMenu == 'faceReg' || isMenu == 'passcode' || isMenu == 'repasscode' || isMenu == 'receipt' || isMenu == 'checkpasscode'" ref="boxview" >
+                                  <renting-step></renting-step>
                                 </div>             
                               </transition>                                             
                             </div>
@@ -48,11 +40,18 @@
                     </v-flex>
                     <v-flex xs10>
                       <div class="h-center" style="min-height: 14vh; max-height: 14vh; padding: 4% 4% 4% 0%;">
-                        <div v-if="isMenu == 'menu'" class="navHeader h-center">
+                        <div v-if="isMenu == 'hello'" class="navHeader h-center">
                           Welcome
                         </div>
-                        <div v-if="currentPage == 'box'" class="navHeader h-center">
-                          Select a Beetle box
+                        <div v-if="isMenu == 'list' || isMenu == 'renting' || isMenu == 'faceReg' || isMenu == 'passcode' || isMenu == 'repasscode' || isMenu == 'receipt' || isMenu == 'checkpasscode'" class="navHeader h-center">
+                          <transition name='fade'>
+                          <div v-if="isStep == 1">Select a Beetle box</div>
+                          <div v-else-if="isStep == 2">Comfirm renting</div>
+                          <div v-else-if="isStep == 3">Face Recognitio</div>
+                          <div v-else-if="isStep == 4">Set passcode</div>
+                          <div v-else-if="isStep == 5">Confirm passcode</div>
+                          <div v-else-if="isStep == 6">Success</div>
+                          </transition>
                         </div>
                       </div>
                     </v-flex>
@@ -90,78 +89,88 @@
 
 <script>
 import OutlineLabel from "./OutlineLabel";
-import { mapGetters, mapActions} from "vuex"
-import {
-  Menu,
-  BoxList,
-  BoxRenting
-} from "./index.js";
+import { mapGetters, mapActions } from "vuex";
+import { Menu, BoxList, BoxRenting, Receipt } from "./index.js";
+import { RentingStep, PreviewCam, PasscodePad } from "./UIComponents/index.js";
+import { setTimeout } from "timers";
 
 export default {
   name: "mainpage",
   components: {
-    "hello": Menu,
-    "renting": BoxRenting,
-    "list": BoxList,
+    hello: Menu,
+    renting: BoxRenting,
+    list: BoxList,
+    RentingStep,
     OutlineLabel,
+    faceReg: PreviewCam,
+    passcode: PasscodePad,
+    repasscode: PasscodePad,
+    checkpasscode: PasscodePad,
+    receipt: Receipt
+
   },
   data() {
     return {
       dialog: false,
       boxs: [],
+      passcode: { passcode: "", repasscode: "" }
     };
   },
   computed: {
     ...mapGetters([
       "isMenu",
       "isStep",
-      "data"
+      "getData",
+      "getPasscode",
+      "getRepasscode"
     ]),
     currentPage: function() {
       var page = this.$route.path.split("/")[1];
       return page;
     },
-    state: function(){
+    state: function() {
       var state = this.$stror.state;
-      return state
+      return state;
     }
   },
   watch: {
-    $route: async function(to, from) {
-      let boxview = await this.$store.state.boxview            
-      let menu = await this.$store.state.menu      
-      if (boxview != this.$store.state.boxview || menu != this.$store.state.menu) {
-        boxview = this.$store.state.boxview
-        menu = this.$store.state.menu
-      }
-      if (boxview == true) {
-        var div = await this.$refs.boxview.children;
-        var stepStr = to.path.split("/")[2];
-        var step = parseInt(stepStr);
-        var previusStepStr = from.path.split("/")[2];
-        var previusStep = parseInt(previusStepStr);
-        if (!previusStep) {
-          
-        } else {
-          div[step - 1].classList.add("inActive");
-          div[previusStep - 1].classList.remove("inActive");
-        }        
-      } else if (menu == true) {
-
-      }
-    },
-    isMenu: function(menu){
+    isMenu: function(menu) {
       console.log(menu);
-    },
-    isStep: function(step){
-      console.log(step);
-      
-      if (this.isMenu == "renting" || this.isMenu == 'list') {
-        let step = parseInt(step);
-        let instruction = this.$refs.boxview
-        console.log(instruction)
-        
-        //let isNotStep = instruction.filters((anotherStep) => anotherStep)
+      if (menu == "setpasscode") { // set passcode
+        if (this.getPasscode != "") {
+          this.passcode.passcode = this.getPasscode;
+          console.log(this.passcode.passcode);
+          this.setMenu("repasscode");
+          this.setStep("5");
+        }
+      } else if (menu == "checkpasscode") { //check passcode
+        if (this.getRepasscode != "") {
+          this.dialog = true;
+          this.passcode.repasscode == this.getRepasscode;
+          var result = this.checkPasscode(
+            this.passcode.passcode,
+            this.getRepasscode
+          );
+          if (result == true) { // passcode match
+            console.log(result);
+            setTimeout(() => {
+              this.dialog = false;
+
+              //save passcode to back-end
+              console.log('save passcode to back-end');
+              this.setMenu("receipt");
+              this.setStep("6")
+            }, 1000);
+          } else { // passcode not match
+            console.log(result);
+            setTimeout(() => {
+              console.log("not match");
+              this.setMenu("passcode");
+              this.setStep("4");
+              this.dialog = false;
+            }, 1000);
+          }
+        }
       }
     }
   },
@@ -169,21 +178,25 @@ export default {
     ...mapActions([
       "setMenu",
       "setStep",
-      "setData"
+      "setData",
+      "setPasscode",
+      "setRepasscode"
     ]),
-    backToMenu: function(){
-      this.setMenu("hello")
-    },
+    checkPasscode: function(passcode, repasscode) {
+      if (passcode == repasscode) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   },
   async beforeMount() {
     this.dialog = true;
     setTimeout(() => {
-      this.dialog = false
+      this.dialog = false;
     }, 3200);
   },
-  mounted(){
-    
-  }
+  mounted() {}
 };
 </script>
 
@@ -296,10 +309,6 @@ export default {
   position: relative;
 }
 
-.inActive {
-  background-color: rgba(251, 246, 46, 0.28);
-}
-
 .navBeetle {
   width: 7vw;
   height: 10vh;
@@ -310,7 +319,7 @@ export default {
 .center {
   text-align: center;
 }
- 
+
 .content {
   min-height: 86vh;
 }
@@ -321,11 +330,16 @@ export default {
   display: flex;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
 
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.inActive {
+  background-color: rgba(251, 246, 46, 0.28);
 }
 </style>
