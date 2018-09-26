@@ -265,6 +265,7 @@ export default {
 .fullscreen {
   min-height: 100vh;
   max-height: 100vh;
+  overflow-y: hidden;
 }
 
 .sidebar-logo {

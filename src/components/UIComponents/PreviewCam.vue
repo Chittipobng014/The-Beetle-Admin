@@ -94,12 +94,15 @@ export default {
   },
   mounted() {
     //this.show()
-    this.startCameraAbove();
-    setTimeout(() => {
-      this.stopCamera();
-      this.setMenu("passcode");
-      this.setStep("4");
-    }, 3000);
+    // this.startCameraAbove();
+    // setTimeout(() => {
+    //   this.stopCamera();
+    //   this.setMenu("passcode");
+    //   this.setStep("4");
+    // }, 3000);
+
+    this.setMenu("passcode");
+    this.setStep("4");
   }
 };
 </script>
