@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="center">
-            <div style="color: #3B5998; font-size: 72px">Box {{id}}</div>
-            <div style="font-size: 64px; margin-bottom: 25px">10 Baht/hr</div>
+            <div style="color: #3B5998; font-size: 72px">{{getSelectedBox.name}}</div>
+            <div style="font-size: 64px; margin-bottom: 25px">{{getSelectedBox.price}} Baht/hr</div>
             <div style="font-size: 18px; color: #FF0000; margin-bottom: 35px">Input your to telephone number in case of forgot your box</div>
             <div style="margin-top: 25px; margin-bottom: 10px; margin-left: 20%"><v-text-field
                 label="Solo"
@@ -19,25 +19,46 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { resolve } from 'path';
+import { reject } from 'q';
 
 export default {
   name: "boxrenting",
+  props: ["name", "id"],
   data() {
     return {
-      id: this.$route.params.id,
       tel: ""
     };
   },
   mounted() {},
   methods: {
-    ...mapActions(["setMenu", "setStep", "setData"]),
-    rent: function() {
+    ...mapActions(["setMenu", "setStep", "setData", "clearSelectedBox", "setPeripheral"]),
+    //Function
+    bleConnect: function(id) {
+      return new Promise(function(resolve, reject){
+        ble.connect(id, peripheral => {
+          this.setPeripheral(peripheral);
+          return resolve(peripheral)
+        }),
+        error => {
+          return reject(error)
+        };
+      })
+    },
+    rent: async function() {
       if (this.tel.length != 0) {
+        try {
+        var connect = await this.bleConnect(this.getSelectedBox.id);
+        console.log(connect);
         this.setMenu("faceReg");
         this.setStep("3");
+        } catch (error) {
+          console.log(error)
+        }    
       }
     },
     goback: function() {
+      this.clearSelectedBox();
       this.setMenu("list");
       this.setStep("1");
     },
@@ -51,12 +72,12 @@ export default {
         this.setMenu("faceReg");
         this.setStep("3");
       } else {
-        console.log('Tel min > 8');
+        console.log("Tel min > 8");
       }
     }
   },
   computed: {
-    ...mapGetters(["isMenu", "isStep", "getData"]),
+    ...mapGetters(["isMenu", "isStep", "getData", "getSelectedBox"]),
     faceid: function() {
       let faceid = this.$refs.cam.faceid;
       return faceid;

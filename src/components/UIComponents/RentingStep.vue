@@ -6,7 +6,7 @@
         <div id="3" ref="4">4. Set passcode</div>
         <div id="4" ref="5">5. Confirm passcode</div>
         <div id="5" ref="6">6. Success</div>
-        <div style="position: absolute;    bottom: 0;   width: 85%">
+        <div v-if="isStep == 1 && isStep == 2 && isStep == 3 && isStep == 4 && isStep == 5" style="position: absolute;    bottom: 0;   width: 85%">
           <v-btn v-on:click="backToMenu" style=" width: 100%; height: 6vh; background-color: #3B5998; margin: 8% 0% 8% 0%; font-size: 100%; color: #FFFFFF;" class="menu-btn">Back to menu</v-btn>
         </div>
     </div>
@@ -21,8 +21,9 @@ export default {
     return {};
   },
   methods: {
-    ...mapActions(["setMenu", "setStep", "setData"]),
+    ...mapActions(["setMenu", "setStep", "setData", "clearSelectedBox"]),
     backToMenu: function() {
+      this.clearSelectedBox();
       this.setMenu("hello");
       this.setStep("0");
     }

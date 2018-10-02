@@ -6,7 +6,9 @@ import store from './store'
 import App from './App'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import { firestore } from './firebase'
 
+Vue.prototype.$db = firestore;
 Vue.use(VueAxios, axios)
 
 Vue.config.productionTip = false

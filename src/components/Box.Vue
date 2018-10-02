@@ -1,6 +1,6 @@
 <template>
 <div>
-    <v-card flat tile class="h-center" style="text-align:center; margin: 0px;  width: 18vw;   height: 21vh;  background-color: #33c0ca">        
+    <v-card flat tile class="h-center" style="text-align:center; margin: 0px;  height: 21vh;  background-color: #33c0ca">        
         <v-btn @click="next()">click</v-btn>
     </v-card>
 </div>
@@ -14,7 +14,8 @@ export default {
   props: {
     name: String,
     status: String,
-    uuid: String
+    uuid: String,
+    price: String
   },
   data() {
     return {
@@ -22,10 +23,14 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["setMenu", "setStep", "setData"]),
+    ...mapActions(["setMenu", "setStep", "setData", "setSelectedBox"]),
+
     next: function() {
+      let box = {id: this.id, name: this.name,price: this.price}
+      this.setSelectedBox(box)
       this.setMenu("renting");
-      this.setStep("2")
+      this.setStep("2");
+
     }
   },
   mounted() {},
