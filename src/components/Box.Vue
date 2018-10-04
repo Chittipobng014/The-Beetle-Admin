@@ -29,8 +29,8 @@ export default {
     next: function() {
       let box = {id: this.id, name: this.name, price: this.price, index: this.index}
       this.setSelectedBox(box)
-      this.setMenu("renting");
-      this.setStep("2");
+      this.setMenu("faceReg");
+      this.setStep("3");
 
     }
   },

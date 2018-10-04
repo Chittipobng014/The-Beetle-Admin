@@ -166,11 +166,11 @@ export default {
               telnumber: this.getTel,
               uuid: this.getSelectedBox.id
             }
-            /*
+            
               var transactionsRef = this.$db.collection("transactions").doc("email");
               const addTransaction = await transactionsRef.update({ transactions: this.$db.FieldValue.arrayUnion(transaction) })
               console.log(addTransactions);
-            */
+            
             setTimeout(() => {
               this.dialog = false;
               //save passcode to back-end

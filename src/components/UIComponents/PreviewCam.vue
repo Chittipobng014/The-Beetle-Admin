@@ -44,43 +44,46 @@ export default {
     },
     takePicture: function() {
       CameraPreview.takePicture(async imageURI => {
-        console.log(imageURI);
-        var base64str = imageURI;
-        var binary = atob(base64str.replace(/\s/g, ""));
-        var len = binary.length;
-        var buffer = new ArrayBuffer(len);
-        var view = new Uint8Array(buffer);
-        for (var i = 0; i < len; i++) {
-          view[i] = binary.charCodeAt(i);
-        }
-        var blob = new Blob([view], { type: "image/jpeg" });
-        var timestamp = Number(new Date());
-        var photoRef = this.$storage.child("photos/" + timestamp + ".jpeg");
-        const upload = await photoRef.put(blob);
-        console.log(upload);
-        const download = await photoRef.getDownloadURL();
-        console.log(download);
-
-        var facedetect = {
-          url:
-            "https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false",
-          data: {
-            url: photoUrl
-          },
-          headers: {
-            "Ocp-Apim-Subscription-Key": "863c391b338e49e7995d2fdeb9a4477c"
+        try {
+          this.hide();
+          console.log(imageURI);
+          var base64str = imageURI.toString();
+          var binary = atob(base64str.replace(/\s/g, ""));
+          var len = binary.length;
+          var buffer = new ArrayBuffer(len);
+          var view = new Uint8Array(buffer);
+          for (var i = 0; i < len; i++) {
+            view[i] = binary.charCodeAt(i);
           }
-        };
+          var blob = new Blob([view], { type: "image/jpeg" });
+          var timestamp = Number(new Date());
+          var photoRef = this.$storage.child("photos/" + timestamp + ".jpeg");
+          const upload = await photoRef.put(blob);
+          console.log("UPLOAD");
+          console.log(upload);
+          const download = await photoRef.getDownloadURL();
+          console.log("DOWNLOAD");
+          console.log(download);
 
-        const face = await axios(facedetect);
-        console.log(face);
+          var facedetect = {
+            url:
+              "https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false",
+            data: {
+              url: photoUrl
+            },
+            headers: {
+              "Ocp-Apim-Subscription-Key": "863c391b338e49e7995d2fdeb9a4477c"
+            }
+          };
 
-        if (this.isOpen == true) {
-          /*
+          const face = await axios(facedetect);
+          console.log("FACE" + JSON.stringify(face));
+          if (this.isOpen == true) {
+            /*
             
           */
-        } else {
-        /*FACEREG API  
+          } else {
+            /*FACEREG API  
           if faceID != null
             this.setFaceID("FACEID");
             this.setMenu("passcode");
@@ -89,14 +92,17 @@ export default {
             show alert message and instruction
             retake picture
         */
+          }
+
+          // photoRef.put(blob).then(function(snapshot) {
+          //   photoRef.getDownloadURL().then(function(url) {
+
+          //   });
+          // });
+        } catch (error) {
+          console.log("ERROR");
+          console.log(error)
         }
-
-        // photoRef.put(blob).then(function(snapshot) {
-        //   photoRef.getDownloadURL().then(function(url) {
-
-        //   });
-        // });
-        
       });
     },
     switchCamera: function() {
@@ -144,16 +150,11 @@ export default {
     ...mapGetters(["isMenu", "isStep", "getData", "isOpen"])
   },
   mounted() {
-    //this.show()
-    // this.startCameraAbove();
-    // setTimeout(() => {
-    //   this.stopCamera();
-    //   this.setMenu("passcode");
-    //   this.setStep("4");
-    // }, 3000);
-
-    this.setMenu("passcode");
-    this.setStep("4");
+    this.show();
+    this.startCameraAbove();
+    setTimeout(() => {
+      this.takePicture();
+    }, 3000);
   }
 };
 </script>
