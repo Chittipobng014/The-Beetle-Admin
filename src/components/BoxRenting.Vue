@@ -11,7 +11,7 @@
                 style="width: 95%; "
                 v-model="tel"
           ></v-text-field></div>
-            <div style="margin-bottom: 25px"><v-btn @click="this.next" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
+            <div style="margin-bottom: 25px"><v-btn @click="this.rent" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
             <div><v-btn @click="this.goback" style="width: 330px; height: 100px; font-size: 28px">Back to box select</v-btn></div>
         </div>
     </div>
@@ -35,8 +35,10 @@ export default {
     ...mapActions(["setMenu", "setStep", "setData", "clearSelectedBox", "setPeripheral"]),
     //Function
     bleConnect: function(id) {
-      return new Promise(function(resolve, reject){
+      return new Promise((resolve, reject) => {
         ble.connect(id, peripheral => {
+          console.log("PERIPHERAL")
+          console.log(peripheral)
           this.setPeripheral(peripheral);
           return resolve(peripheral)
         }),
@@ -48,8 +50,9 @@ export default {
     rent: async function() {
       if (this.tel.length != 0) {
         try {
-        var connect = await this.bleConnect(this.getSelectedBox.id);
-        console.log(connect);
+        //var connect = await this.bleConnect(this.getSelectedBox.id);
+        console.log("CONNECT")
+        //console.log(connect);
         this.setMenu("faceReg");
         this.setStep("3");
         } catch (error) {

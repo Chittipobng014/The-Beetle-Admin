@@ -6,7 +6,6 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { setTimeout } from "timers";
 
 export default {
   name: "faceReg",
@@ -16,7 +15,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["setMenu", "setStep", "setData"]),
+    ...mapActions(["setMenu", "setStep", "setData", "setFaceID"]),
     startCameraAbove: function() {
       CameraPreview.startCamera({
         x: 50,
@@ -46,6 +45,15 @@ export default {
     takePicture: function() {
       CameraPreview.takePicture(function(imgData) {
         console.log(imgData);
+        /*FACEREG API
+        if faceID != null
+          this.setFaceID("FACEID");
+          this.setMenu("passcode");
+          this.setStep("4");
+        else
+          show alert message and instruction
+          retake picture
+        */
       });
     },
     switchCamera: function() {

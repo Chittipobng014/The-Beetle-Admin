@@ -22,7 +22,16 @@ const app = new Vue({
   components: { App },
   methods:{
     init: function() {
-      // ble start scan
+      ble.startScan([], function(device) {
+        console.log(JSON.stringify(device));
+      }, function (err) {
+        console.log(err);
+      });
+      setTimeout(ble.stopScan,
+        5000,
+        function() { console.log("Scan complete"); },
+        function() { console.log("stopScan failed"); }
+      );
     }
   }
 })

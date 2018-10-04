@@ -10,6 +10,8 @@ export default new Vuex.Store({
     status: { menu: "hello", step: "", data: {passcode: '', repasscode: ''} },
     selectedBox: [],
     peripheral: null,
+    faceID: null,
+    tel: null
   },
   getters: {
     isMenu: state => state.status.menu,
@@ -18,9 +20,17 @@ export default new Vuex.Store({
     getPasscode: state => state.status.data.passcode,
     getRepasscode: state => state.status.data.repasscode,
     getSelectedBox: state => state.selectedBox[0],
-    getPeripheral: state => state.peripheral
+    getPeripheral: state => state.peripheral,
+    getFaceID: state => state.faceID,
+    getTel: state => state.tel
   },
   mutations: {
+    SET_TEL(state, payload){
+      state.tel = payload;
+    },
+    SET_FACEID(state, payload){
+      state.faceID = payload;
+    },
     SET_PERIPHERAL(state, payload){
       state.peripheral = payload;
     },
@@ -64,6 +74,8 @@ export default new Vuex.Store({
     setSelectedBox: ({ commit }, payload) => commit("ADDSELECTED_BOX", payload),
     clearSelectedBox: ({ commit }) => commit("CLEAR_SELECTED_BOX"),
     setPeripheral: ({ commit }, payload) => commit("SET_PERIPHERAL", payload),
-    clearPeripheral: ({ commit }, payload) => commit("CLEAR_PERIPHERAL")
+    clearPeripheral: ({ commit }, payload) => commit("CLEAR_PERIPHERAL"),
+    setFaceID: ({ commit }, payload) => commit("SET_FACEID", payload),
+    setTel: ({ commit }, payload) => commit("SET_TEL", payload)
   }
 })

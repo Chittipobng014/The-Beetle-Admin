@@ -122,7 +122,9 @@ export default {
       "isStep",
       "getData",
       "getPasscode",
-      "getRepasscode"
+      "getRepasscode",
+      "getSelectedBox",
+      "getTel"
     ]),
     currentPage: function() {
       var page = this.$route.path.split("/")[1];
@@ -134,7 +136,7 @@ export default {
     }
   },
   watch: {
-    isMenu: function(menu) {
+    isMenu: async function(menu) {
       console.log(menu);
       if (menu == "setpasscode") { // set passcode
         if (this.getPasscode != "") {
@@ -153,6 +155,22 @@ export default {
           );
           if (result == true) { // passcode match
             console.log(result);
+            var transaction = {
+              checkin: '',
+              checkout: '',
+              cost: this.getSelectedBox.price,
+              faceid: this.getFaceID,
+              name: this.getSelectedBox.name,
+              password: this.getPasscode,
+              telnumber: this.getTel,
+              uuid: this.getSelectedBox.id
+            }
+            /*
+              var transactionsRef = this.$db.collection("transactions").doc("email");
+              const addTransaction = await transactionsRef.update({ transactions: this.$db.FieldValue.arrayUnion(transaction) })
+              console.log(addTransactions);
+            */
+
             setTimeout(() => {
               this.dialog = false;
 

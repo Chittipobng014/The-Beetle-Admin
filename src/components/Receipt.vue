@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="center">
-            <div><img src="../assets/Logo/logo.png" alt="" style="width: 40%; height: 40%"></div>
+            <div><img src="../assets/Logo/logo.png" alt="" style="width: 35%; height: 35%"></div>
             <div style="color: green; font-size: 350%">Successfully</div>
             <div class="margin" style="font-size: 250%">{{getSelectedBox.name}}</div>
             <div style="font-size: 250%">Box will open in {{time}} second</div>
@@ -41,15 +41,23 @@ export default {
     ...mapGetters(["getSelectedBox", "getPeripheral"])
   },
   mounted() {
-    console.log("mounted");
+    console.log("COUNTDOWN");
     this.countdown();
   },
   methods: {
+    ...mapActions([
+      "setMenu",
+      "setStep",
+      "setData",
+      "clearSelectedBox",
+      "setPeripheral"
+    ]),
     countdown: function() {
       var timer = setInterval(() => {
         this.time -= 1;
         if (this.time == 0) {
-          this.openBox();
+          console.log("OPEN AND STOP");
+          //this.openBox();
           this.showAlert();
           clearInterval(timer);
         }
@@ -59,9 +67,12 @@ export default {
       console.log("Alert Show");
       this.alert = true;
       setTimeout(() => {
-        this.closeBox();
+        //this.closeBox();
         this.alert = false;
         console.log("Alert hide");
+        this.setMenu("menu");
+        this.setStep("0");
+        this.setS;
       }, 2000);
     },
     openBox: function() {
