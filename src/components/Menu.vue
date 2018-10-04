@@ -1,5 +1,5 @@
 <template>
-    <div class="container center content" id="menu">
+    <div class="container center content">
         <div>
             <v-btn v-on:click="nextTolist" class="menu-btn">Rent a box</v-btn>
         </div>
@@ -17,23 +17,17 @@ export default {
   methods: {
     ...mapActions([
         "setMenu",
-        "setStep"
+        "setStep",
+        "setIsOpen"
     ]),
     nextTolist: function() {
       this.setMenu("list");
+      this.setStep("1");
     },
     nextToOpen: function() {
-      this.setMenu("open");
+      this.setIsOpen(true)
+      this.setMenu("facereg");
     }
-  },
-  async beforeMount() {
-    await this.$store.commit("menu", true);
-  },
-  async beforeDestroy() {
-    await this.$store.commit("menu", false);
-  },
-  computed:{
-    ...mapGetters(["isMenu"])
   }
 };
 </script>

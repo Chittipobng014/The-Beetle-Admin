@@ -170,12 +170,9 @@ export default {
               const addTransaction = await transactionsRef.update({ transactions: this.$db.FieldValue.arrayUnion(transaction) })
               console.log(addTransactions);
             */
-
             setTimeout(() => {
               this.dialog = false;
-
               //save passcode to back-end
-              console.log('save passcode to back-end');
               this.setMenu("receipt");
               this.setStep("6")
             }, 1000);
@@ -198,7 +195,8 @@ export default {
       "setStep",
       "setData",
       "setPasscode",
-      "setRepasscode"
+      "setRepasscode",
+      "setBoxs"
     ]),
     checkPasscode: function(passcode, repasscode) {
       if (passcode == repasscode) {
@@ -209,12 +207,18 @@ export default {
     }
   },
   async beforeMount() {
+    try {
+      const boxlist = await this.$db.collection("boxs").doc("email").get();
+      var allbox = boxlist.data().boxs;
+      this.setBoxs(allbox);
+    } catch (error) {
+      console.log(error)
+    }
     this.dialog = true;
     setTimeout(() => {
       this.dialog = false;
     }, 3200);
-  },
-  mounted() {}
+  }
 };
 </script>
 

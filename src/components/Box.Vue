@@ -15,7 +15,8 @@ export default {
     name: String,
     status: String,
     uuid: String,
-    price: String
+    price: Number,
+    index: Number
   },
   data() {
     return {
@@ -26,7 +27,7 @@ export default {
     ...mapActions(["setMenu", "setStep", "setData", "setSelectedBox"]),
 
     next: function() {
-      let box = {id: this.id, name: this.name,price: this.price}
+      let box = {id: this.id, name: this.name, price: this.price, index: this.index}
       this.setSelectedBox(box)
       this.setMenu("renting");
       this.setStep("2");

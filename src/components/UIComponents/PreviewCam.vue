@@ -45,15 +45,21 @@ export default {
     takePicture: function() {
       CameraPreview.takePicture(function(imgData) {
         console.log(imgData);
+        if (this.isOpen == true) {
+          /*
+            
+          */
+        } else{
         /*FACEREG API
-        if faceID != null
-          this.setFaceID("FACEID");
-          this.setMenu("passcode");
-          this.setStep("4");
-        else
-          show alert message and instruction
-          retake picture
+          if faceID != null
+            this.setFaceID("FACEID");
+            this.setMenu("passcode");
+            this.setStep("4");
+          else
+            show alert message and instruction
+            retake picture
         */
+        }
       });
     },
     switchCamera: function() {
@@ -98,7 +104,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["isMenu", "isStep", "getData"])
+    ...mapGetters(["isMenu", "isStep", "getData", "isOpen"])
   },
   mounted() {
     //this.show()

@@ -2,8 +2,8 @@
     <div style="max-height: 86vh; min-height: 86vh;;background-color: #DBD8D8;" id="scroll-target" class="scroll-y">
         <v-card style="border: 0px; background-color: #DBD8D8;">  
             <v-layout row wrap v-scroll:#scroll-target="onScroll">
-                <v-flex class="flex-padding" v-for="box in boxs" :key="box.name" xs4>
-                    <box style="margin: 5% 5% 5% 5%;" v-bind:price="box.price" v-bind:name="box.name" v-bind:status="box.status" v-bind:uuid="box.uuid"></box>
+                <v-flex class="flex-padding" v-for="(box, index) in boxs" :key="box.uuid" xs4>
+                    <box style="margin: 5% 5% 5% 5%;" v-bind:index="index" v-bind:price="box.price" v-bind:name="box.name" v-bind:status="box.status" v-bind:uuid="box.uuid"></box>
                 </v-flex>
             </v-layout>
         </v-card>
@@ -12,7 +12,7 @@
  
 <script>
 import Box from "./Box";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "boxlist",
@@ -28,15 +28,17 @@ export default {
     }
   },
   async created() {
-    const boxlist = await this.$db.collection("boxs").doc("email").get();
-    console.log(boxlist.data());
-    this.boxs = boxlist.data().boxs;
+    this.boxs = this.getBoxs;
+    console.log(this.boxs)
   },
   components: {
     Box
   },
   mounted() {
-    this.setStep("1");
+    
+  },
+  computed: {
+    ...mapGetters(["getBoxs"])
   }
 };
 </script>

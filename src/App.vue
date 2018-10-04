@@ -1,11 +1,17 @@
 <template>
-  <router-view></router-view>
+  <transition>
+    <main-page></main-page>
+  </transition>
 </template>
 
 <script>
+import MainPage from './components/MainPage'
 export default {
   name: "app",
   async beforeMount() {
+  },
+  components:{
+    MainPage
   }
 };
 </script>

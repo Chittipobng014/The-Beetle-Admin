@@ -49,7 +49,7 @@ export default {
       "setMenu",
       "setStep",
       "setData",
-      "clearSelectedBox",
+      "clearDetails",
       "setPeripheral"
     ]),
     countdown: function() {
@@ -63,16 +63,16 @@ export default {
         }
       }, 1000);
     },
-    showAlert: function() {
+    showAlert: async function() {
       console.log("Alert Show");
       this.alert = true;
       setTimeout(() => {
         //this.closeBox();
         this.alert = false;
         console.log("Alert hide");
-        this.setMenu("menu");
+        this.setMenu("hello");
         this.setStep("0");
-        this.setS;
+        this.clearDetails();
       }, 2000);
     },
     openBox: function() {
