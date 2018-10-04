@@ -155,8 +155,9 @@ export default {
           );
           if (result == true) { // passcode match
             console.log(result);
+            var timestamp = Number(new Date());
             var transaction = {
-              checkin: '',
+              checkin: timestamp,
               checkout: '',
               cost: this.getSelectedBox.price,
               faceid: this.getFaceID,

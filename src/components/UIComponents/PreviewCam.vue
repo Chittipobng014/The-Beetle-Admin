@@ -43,14 +43,44 @@ export default {
       CameraPreview.stopCamera();
     },
     takePicture: function() {
-      CameraPreview.takePicture(function(imgData) {
-        console.log(imgData);
+      CameraPreview.takePicture(async imageURI => {
+        console.log(imageURI);
+        var base64str = imageURI;
+        var binary = atob(base64str.replace(/\s/g, ""));
+        var len = binary.length;
+        var buffer = new ArrayBuffer(len);
+        var view = new Uint8Array(buffer);
+        for (var i = 0; i < len; i++) {
+          view[i] = binary.charCodeAt(i);
+        }
+        var blob = new Blob([view], { type: "image/jpeg" });
+        var timestamp = Number(new Date());
+        var photoRef = this.$storage.child("photos/" + timestamp + ".jpeg");
+        const upload = await photoRef.put(blob);
+        console.log(upload);
+        const download = await photoRef.getDownloadURL();
+        console.log(download);
+
+        var facedetect = {
+          url:
+            "https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false",
+          data: {
+            url: photoUrl
+          },
+          headers: {
+            "Ocp-Apim-Subscription-Key": "863c391b338e49e7995d2fdeb9a4477c"
+          }
+        };
+
+        const face = await axios(facedetect);
+        console.log(face);
+
         if (this.isOpen == true) {
           /*
             
           */
-        } else{
-        /*FACEREG API
+        } else {
+        /*FACEREG API  
           if faceID != null
             this.setFaceID("FACEID");
             this.setMenu("passcode");
@@ -60,6 +90,13 @@ export default {
             retake picture
         */
         }
+
+        // photoRef.put(blob).then(function(snapshot) {
+        //   photoRef.getDownloadURL().then(function(url) {
+
+        //   });
+        // });
+        
       });
     },
     switchCamera: function() {
