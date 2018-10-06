@@ -41,7 +41,6 @@ export default {
     ...mapGetters(["getSelectedBox", "getPeripheral"])
   },
   mounted() {
-    console.log("COUNTDOWN");
     this.countdown();
   },
   methods: {
@@ -56,7 +55,6 @@ export default {
       var timer = setInterval(() => {
         this.time -= 1;
         if (this.time == 0) {
-          console.log("OPEN AND STOP");
           //this.openBox();
           this.showAlert();
           clearInterval(timer);
@@ -64,11 +62,9 @@ export default {
       }, 1000);
     },
     showAlert: async function() {
-      console.log("Alert Show");
       this.alert = true;
       setTimeout(() => {
         //this.closeBox();
-        console.log("Alert hide");
         this.setMenu("hello");
         this.setStep("0");
         //this.clearDetails();

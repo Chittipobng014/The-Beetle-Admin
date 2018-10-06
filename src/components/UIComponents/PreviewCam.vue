@@ -1,6 +1,42 @@
 <template>
     <div>
-      
+      <v-dialog
+            v-model="alert"
+            width="500"
+            >
+                <v-card>
+                    <v-card-title
+                    class="headline grey lighten-2 center"
+                    primary-title
+                    >
+                        Thank you
+                    </v-card-title>
+
+                    <v-card-text class="center">
+                        Thank you for choosing us. Your box is opened
+                    </v-card-text>
+                </v-card>
+      </v-dialog>
+      <v-dialog
+          v-model="loading"
+          persistent
+          width="300"
+          lazy
+        >
+          <v-card
+            color="indigo"
+            dark
+          >
+            <v-card-text>
+              Loading...
+              <v-progress-linear
+                indeterminate
+                color="white"
+                class="mb-0"
+              ></v-progress-linear>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -11,11 +47,13 @@ export default {
   name: "faceReg",
   data() {
     return {
-      faceid: ""
+      faceid: "",
+      alert: false,
+      loading: false
     };
   },
   methods: {
-    ...mapActions(["setMenu", "setStep", "setData", "setFaceID"]),
+    ...mapActions(["setMenu", "setStep", "setData", "setFaceID", "setIsOpen"]),
     startCameraAbove: function() {
       CameraPreview.startCamera({
         x: 50,
@@ -44,6 +82,8 @@ export default {
     },
     takePicture: function() {
       CameraPreview.takePicture(async imageURI => {
+        this.hide();
+        this.loading = true;
         try {
           var base64str = imageURI.toString();
           var binary = atob(base64str.replace(/\s/g, ""));
@@ -74,16 +114,47 @@ export default {
           };
 
           const face = await this.axios(facedetect);
+          console.log(face);
           var faceId = face.data[0].faceId;
           console.log("FACE");
           console.log(faceId);
-          this.hide();
           if (this.isOpen == true) {
-            /*
-            
-          */
+            let faceId1 = this.getTransactions[0].faceid;
+            let faceId2 = faceId;
+            var faceVerify = {
+              url:
+                "https://southeastasia.api.cognitive.microsoft.com/face/v1.0/verify",
+              method: "POST",
+              headers: {
+                "Ocp-Apim-Subscription-Key": "863c391b338e49e7995d2fdeb9a4477c"
+              },
+              data: {
+                faceId1: faceId1,
+                faceId2: faceId2
+              }
+            };
+
+            try {
+              const verify = await this.axios(faceVerify);
+              console.log(JSON.stringify(verify));
+              if (verify.data.isIdentical == true) {
+                this.loading = false;
+                this.hide();
+                this.alert = true;
+                setTimeout( () => {
+                  this.alert = false;
+                  this.setIsOpen(false);
+                  this.setMenu("hello");
+                }, 2000)
+              } else {
+                //goto passcode
+              }
+            } catch (error) {
+              console.log(error)
+            }
           } else {
             if (faceId != null) {
+              this.loading = false;
               this.setFaceID(faceId);
               this.setMenu("passcode");
               this.setStep("4");
@@ -140,16 +211,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["isMenu", "isStep", "getData", "isOpen"])
+    ...mapGetters(["isMenu", "isStep", "getData", "isOpen", "getTransactions"])
   },
   mounted() {
-    // this.show();
-    // this.startCameraAbove();
-    // setTimeout(() => {
-    //   this.takePicture();
-    // }, 3000);
-    this.setMenu("passcode");
-    this.setStep("4");
+    this.show();
+    this.startCameraAbove();
+    setTimeout(() => {
+      this.takePicture();
+    }, 3000);
+    // this.setMenu("passcode");
+    // this.setStep("4");
   }
 };
 </script>

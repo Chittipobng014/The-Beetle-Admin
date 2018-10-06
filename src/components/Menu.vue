@@ -26,7 +26,7 @@ export default {
     },
     nextToOpen: function() {
       this.setIsOpen(true)
-      this.setMenu("facereg");
+      this.setMenu("faceReg");
     }
   }
 };

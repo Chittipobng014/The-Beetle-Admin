@@ -43,7 +43,7 @@
                         <div v-if="isMenu == 'hello'" class="navHeader h-center">
                           Welcome
                         </div>
-                        <div v-if="isMenu == 'list' || isMenu == 'renting' || isMenu == 'faceReg' || isMenu == 'passcode' || isMenu == 'repasscode' || isMenu == 'receipt' || isMenu == 'checkpasscode'" class="navHeader h-center">
+                        <div v-if="isMenu == 'list' || isMenu == 'renting' || isMenu == 'faceReg' || isMenu == 'passcode' || isMenu == 'repasscode' || isMenu == 'receipt' || isMenu == 'checkpasscode' && isOpen == false" class="navHeader h-center">
                           <transition name='fade'>
                           <div v-if="isStep == 1">Select a Beetle box</div>
                           <div v-else-if="isStep == 2">Comfirm renting</div>
@@ -92,7 +92,6 @@ import OutlineLabel from "./OutlineLabel";
 import { mapGetters, mapActions } from "vuex";
 import { Menu, BoxList, BoxRenting, Receipt } from "./index.js";
 import { RentingStep, PreviewCam, PasscodePad } from "./UIComponents/index.js";
-import { setTimeout } from "timers";
 
 export default {
   name: "mainpage",
@@ -125,7 +124,9 @@ export default {
       "getSelectedBox",
       "getTel",
       "getBoxs",
-      "getTransactions"
+      "getTransactions",
+      "getFaceID",
+      "isOpen"
     ]),
     currentPage: function() {
       var page = this.$route.path.split("/")[1];
@@ -138,12 +139,12 @@ export default {
   },
   watch: {
     isMenu: async function(menu) {
-      console.log(menu);
+      //console.log(menu);
       if (menu == "setpasscode") {
         // set passcode
         if (this.getPasscode != "") {
           this.passcode.passcode = this.getPasscode;
-          console.log(this.passcode.passcode);
+          //console.log(this.passcode.passcode);
           this.setMenu("repasscode");
           this.setStep("5");
         }
@@ -158,37 +159,36 @@ export default {
           );
           if (result == true) {
             // passcode match
-            console.log(result);
+            //console.log(result);
             var timestamp = Number(new Date());
             var transaction = {
               checkin: timestamp,
               checkout: "",
               cost: this.getSelectedBox.price,
-              faceid: 'this.getFaceID',
+              faceid: this.getFaceID,
               name: this.getSelectedBox.name,
               password: this.getPasscode,
-              telnumber: this.getTel,
+              telnumber: "0983439189",
               uuid: this.getSelectedBox.id
             };
-            try {
-              var oldTransactions = this.getTransactions;
-              this.updateTransaction(oldTransactions, transaction)
-              var old = this.getBoxs;
-              var updated = this.getSelectedBox
-              this.updateBoxChange(old, updated);
-
-            } catch (error) {
-              console.log(error);
-            }
+            var oldTransactions = this.getTransactions;
+            console.log("!&$");
+            console.log(oldTransactions)
+            this.updateTransaction(oldTransactions, transaction)
+            var old = this.getBoxs;
+            var updated = this.getSelectedBox
+            this.updateBoxChange(old, updated);
+            
             setTimeout(() => {
               this.dialog = false;
               //save passcode to back-end
               this.setMenu("receipt");
               this.setStep("6");
             }, 1000);
+
           } else {
             // passcode not match
-            console.log(result);
+            //console.log(result);
             setTimeout(() => {
               console.log("not match");
               this.setMenu("passcode");
@@ -233,38 +233,53 @@ export default {
       }
     },
     updateTransaction: async function(payload1, payload2) {
-      let oldTransactions = payload1;
-      console.log(oldTransactions); 
-      var updatedTransaction = payload2;
-      var index = oldTransactions.map(function(element) { console.log(element); return element.uuid; }).indexOf(updatedTransaction.id);
-      if (index != -1) {
-        oldTransactions[index] = updatedTransaction
-      }
-      this.setTransactions(updatedTransaction);
-      var transactions = this.getTransactions;
       try {
-        var boxsRef = await this.$db.collection("transactions").doc("email").update({transactions})
+        let oldTransactions = payload1;
+        if (oldTransactions.length == 0) {
+          oldTransactions.push(payload2)
+          this.setTransactions(oldTransactions);
+          var transactions = this.getTransactions;
+          console.log("TTTT1");
+          console.log(JSON.stringify(transactions));
+          var transactionsRef = await this.$db.collection("transactions").doc("email").set({transactions: oldTransactions})
+        } else {
+          console.log(oldTransactions); 
+          var updatedTransaction = payload2;
+          var index = oldTransactions.map(function(element) { return element.uuid; }).indexOf(updatedTransaction.uuid);
+          if (index != -1) {
+            oldTransactions[index] = updatedTransaction
+          }
+          this.setTransactions(oldTransactions);
+          var transactions = this.getTransactions;
+          console.log("TTTT2");
+          console.log(JSON.stringify(transactions));
+          var transactionsRef = await this.$db.collection("transactions").doc("email").set({transactions: oldTransactions})
+        }
       } catch (error) {
+        console.log("error")
         console.log(error)
       }
     },
   },
   async beforeMount() {
+    this.dialog = true;
     try {
       const boxlist = await this.$db.collection("boxs").doc("email").get();
       var allbox = boxlist.data().boxs;
       const transactions = await this.$db.collection("transactions").doc("email").get();
       var allTransaction = transactions.data().transactions
+      console.log("allTransaction")
       console.log(allTransaction)
       this.setTransactions(allTransaction);
       this.setBoxs(allbox);
     } catch (error) {
+      console.log("error259");
       console.log(error);
     }
-    this.dialog = true;
+    
     setTimeout(() => {
       this.dialog = false;
-    }, 3200);
+    }, 200);
   }
 };
 </script>

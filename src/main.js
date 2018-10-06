@@ -30,8 +30,8 @@ const app = new Vue({
       });
       setTimeout(ble.stopScan,
         5000,
-        function() { console.log("Scan complete"); },
-        function() { console.log("stopScan failed"); }
+        function() { },
+        function() { }
       );
     }
   }
