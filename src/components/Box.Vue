@@ -27,7 +27,7 @@ export default {
     ...mapActions(["setMenu", "setStep", "setData", "setSelectedBox"]),
 
     next: function() {
-      let box = {id: this.id, name: this.name, price: this.price, index: this.index}
+      let box = {id: this.id, name: this.name, price: this.price, status: "1"}
       this.setSelectedBox(box)
       this.setMenu("faceReg");
       this.setStep("3");

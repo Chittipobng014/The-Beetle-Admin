@@ -45,8 +45,6 @@ export default {
     takePicture: function() {
       CameraPreview.takePicture(async imageURI => {
         try {
-          this.hide();
-          console.log(imageURI);
           var base64str = imageURI.toString();
           var binary = atob(base64str.replace(/\s/g, ""));
           var len = binary.length;
@@ -59,11 +57,9 @@ export default {
           var timestamp = Number(new Date());
           var photoRef = this.$storage.child("photos/" + timestamp + ".jpeg");
           const upload = await photoRef.put(blob);
-          console.log("UPLOAD");
-          console.log(upload);
-          const download = await photoRef.getDownloadURL();
+          const photoUrl = await photoRef.getDownloadURL();
           console.log("DOWNLOAD");
-          console.log(download);
+          console.log(photoUrl);
 
           var facedetect = {
             url:
@@ -71,37 +67,34 @@ export default {
             data: {
               url: photoUrl
             },
+            method: "POST",
             headers: {
               "Ocp-Apim-Subscription-Key": "863c391b338e49e7995d2fdeb9a4477c"
             }
           };
 
-          const face = await axios(facedetect);
-          console.log("FACE" + JSON.stringify(face));
+          const face = await this.axios(facedetect);
+          var faceId = face.data[0].faceId;
+          console.log("FACE");
+          console.log(faceId);
+          this.hide();
           if (this.isOpen == true) {
             /*
             
           */
           } else {
-            /*FACEREG API  
-          if faceID != null
-            this.setFaceID("FACEID");
-            this.setMenu("passcode");
-            this.setStep("4");
-          else
-            show alert message and instruction
-            retake picture
-        */
+            if (faceId != null) {
+              this.setFaceID(faceId);
+              this.setMenu("passcode");
+              this.setStep("4");
+            } else {
+              // show alert message and instruction
+              // retake picture
+            }
           }
-
-          // photoRef.put(blob).then(function(snapshot) {
-          //   photoRef.getDownloadURL().then(function(url) {
-
-          //   });
-          // });
         } catch (error) {
           console.log("ERROR");
-          console.log(error)
+          console.log(error);
         }
       });
     },
@@ -150,11 +143,13 @@ export default {
     ...mapGetters(["isMenu", "isStep", "getData", "isOpen"])
   },
   mounted() {
-    this.show();
-    this.startCameraAbove();
-    setTimeout(() => {
-      this.takePicture();
-    }, 3000);
+    // this.show();
+    // this.startCameraAbove();
+    // setTimeout(() => {
+    //   this.takePicture();
+    // }, 3000);
+    this.setMenu("passcode");
+    this.setStep("4");
   }
 };
 </script>

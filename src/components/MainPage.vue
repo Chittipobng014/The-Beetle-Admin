@@ -107,7 +107,6 @@ export default {
     repasscode: PasscodePad,
     checkpasscode: PasscodePad,
     receipt: Receipt
-
   },
   data() {
     return {
@@ -124,7 +123,9 @@ export default {
       "getPasscode",
       "getRepasscode",
       "getSelectedBox",
-      "getTel"
+      "getTel",
+      "getBoxs",
+      "getTransactions"
     ]),
     currentPage: function() {
       var page = this.$route.path.split("/")[1];
@@ -138,14 +139,16 @@ export default {
   watch: {
     isMenu: async function(menu) {
       console.log(menu);
-      if (menu == "setpasscode") { // set passcode
+      if (menu == "setpasscode") {
+        // set passcode
         if (this.getPasscode != "") {
           this.passcode.passcode = this.getPasscode;
           console.log(this.passcode.passcode);
           this.setMenu("repasscode");
           this.setStep("5");
         }
-      } else if (menu == "checkpasscode") { //check passcode
+      } else if (menu == "checkpasscode") {
+        //check passcode
         if (this.getRepasscode != "") {
           this.dialog = true;
           this.passcode.repasscode == this.getRepasscode;
@@ -153,31 +156,39 @@ export default {
             this.passcode.passcode,
             this.getRepasscode
           );
-          if (result == true) { // passcode match
+          if (result == true) {
+            // passcode match
             console.log(result);
             var timestamp = Number(new Date());
             var transaction = {
               checkin: timestamp,
-              checkout: '',
+              checkout: "",
               cost: this.getSelectedBox.price,
               faceid: this.getFaceID,
               name: this.getSelectedBox.name,
               password: this.getPasscode,
               telnumber: this.getTel,
               uuid: this.getSelectedBox.id
+            };
+            var transactionsRef = this.$db.collection("transactions").doc("email")
+            try {
+              var oldTransactions = this.getTransactions;
+              this.updateTransaction(oldTransactions, transaction)
+              var old = this.getBoxs;
+              var updated = this.getSelectedBox
+              this.updateBoxChange(old, updated);
+
+            } catch (error) {
+              console.log(error);
             }
-            
-              var transactionsRef = this.$db.collection("transactions").doc("email");
-              const addTransaction = await transactionsRef.update({ transactions: this.$db.FieldValue.arrayUnion(transaction) })
-              console.log(addTransactions);
-            
             setTimeout(() => {
               this.dialog = false;
               //save passcode to back-end
               this.setMenu("receipt");
-              this.setStep("6")
+              this.setStep("6");
             }, 1000);
-          } else { // passcode not match
+          } else {
+            // passcode not match
             console.log(result);
             setTimeout(() => {
               console.log("not match");
@@ -197,7 +208,10 @@ export default {
       "setData",
       "setPasscode",
       "setRepasscode",
-      "setBoxs"
+      "setBoxs",
+      "clearSelectedBox",
+      "updateBoxChange",
+      "setTransactions"
     ]),
     checkPasscode: function(passcode, repasscode) {
       if (passcode == repasscode) {
@@ -205,15 +219,49 @@ export default {
       } else {
         return false;
       }
-    }
+    },
+    updateBoxChange: async function(payload1, payload2) {
+      let oldBoxs = payload1;
+      console.log(payload2); 
+      var updatedBox = payload2;
+      console.log(updatedBox)
+      var index = oldBoxs.map(function(element) { console.log(element); return element.uuid; }).indexOf(updatedBox.id);
+      console.log(index);
+      oldBoxs[index].status = updatedBox.status
+      var boxs = this.getBoxs;
+      this.setBoxs(oldBoxs);
+      try {
+        var boxsRef = await this.$db.collection("boxs").doc("email").update({boxs})
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    updateTransaction: async function(payload1, payload2) {
+      let oldTransactions = payload1;
+      console.log(oldTransactions); 
+      var updatedTransaction = payload2;
+      var index = oldTransactions.map(function(element) { console.log(element); return element.uuid; }).indexOf(updatedTransaction.id);
+      if (index != -1) {
+        oldTransactions[index] = updatedTransaction
+      }
+      this.setBoxs(boxs);
+      var transactions = this.getBoxs;
+      try {
+        var boxsRef = await this.$db.collection("transactions").doc("email").update({transactions})
+      } catch (error) {
+        console.log(error)
+      }
+    },
   },
   async beforeMount() {
     try {
       const boxlist = await this.$db.collection("boxs").doc("email").get();
       var allbox = boxlist.data().boxs;
+      const transactions = await this.$db.collection("transactions").doc("email").get();
+      this.setTransactions(transactions);
       this.setBoxs(allbox);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
     this.dialog = true;
     setTimeout(() => {

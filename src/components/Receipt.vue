@@ -68,11 +68,11 @@ export default {
       this.alert = true;
       setTimeout(() => {
         //this.closeBox();
-        this.alert = false;
         console.log("Alert hide");
         this.setMenu("hello");
         this.setStep("0");
-        this.clearDetails();
+        //this.clearDetails();
+        this.alert = false;
       }, 2000);
     },
     openBox: function() {

@@ -10,7 +10,8 @@ export default new Vuex.Store({
     peripheral: null,
     faceID: null,
     tel: null,
-    boxs: []
+    boxs: [],
+    transactions: []
   },
   getters: {
     isMenu: state => state.status.menu,
@@ -23,7 +24,8 @@ export default new Vuex.Store({
     getPeripheral: state => state.peripheral,
     getFaceID: state => state.faceID,
     getTel: state => state.tel,
-    getBoxs: state => state.boxs
+    getBoxs: state => state.boxs,
+    getTransactions: state => state.transactions
   },
   mutations: {
     CLEAR_DETAILS(state){
@@ -53,6 +55,9 @@ export default new Vuex.Store({
     ADDSELECTED_BOX(state, payload){
       state.selectedBox.push(payload)
     },
+    CLEAR_SELECTEDBOX(state){
+      state.selectedBox = [];
+    },
     boxview(state, payload) {
       state.boxview = payload;
     },
@@ -76,6 +81,9 @@ export default new Vuex.Store({
     },
     SET_ISOPEN(state, payload){
       state.status.isOpen = payload;
+    },
+    SET_TRANSACTIONS(state, payload){
+      state.transactions = payload;
     }
   },
   actions: {
@@ -94,6 +102,8 @@ export default new Vuex.Store({
         commit("SET_BOXS", payload);
         console.log("BOX_FETCHED")
     },
-    setIsOpen: ( {commit }, payload) => commit("SET_ISOPEN", payload)
+    setIsOpen: ( {commit }, payload) => commit("SET_ISOPEN", payload),
+    clearSelectedBox: ( {commit }) => commit("CLEAR_SELECTEDBOX"),
+    setTransactions: ( {commit }, payload) => commit("SET_TRANSACTIONS")
   }
 })
