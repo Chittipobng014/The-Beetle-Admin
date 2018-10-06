@@ -109,6 +109,7 @@ import OutlineLabel from "./OutlineLabel";
 import { mapGetters, mapActions } from "vuex";
 import { Menu, BoxList, BoxRenting, Receipt } from "./index.js";
 import { RentingStep, PreviewCam, PasscodePad } from "./UIComponents/index.js";
+import bleLb from "./ble/ble.js";
 
 export default {
   name: "mainpage",
@@ -147,7 +148,8 @@ export default {
       "isOpen",
       "updateTransactions",
       "updateBoxs",
-      "passcodeAttemp"
+      "passcodeAttemp",
+      "getPeripheral"
     ]),
     currentPage: function() {
       var page = this.$route.path.split("/")[1];
@@ -214,7 +216,9 @@ export default {
         }
       }
     },
-    updateTransactions: function(updated){
+    updateTransactions: async function(updated){
+      console.log(updated);
+      
       if (updated == true && this.isOpen == false) {
         var timestamp = Number(new Date());
         var transaction = {
@@ -231,19 +235,27 @@ export default {
         this.updateTransaction(oldTransactions, transaction);
       } else if(updated == true && this.isOpen == true){
         var thisTransaction = this.getTransactions[0]
+        const connect = await this.bleConnect(thisTransaction.uuid);
+        this.openBox();
         var deletedTransaction = this.getTransactions.filter( (transaction) => transaction.uuid != thisTransaction.uuid);
         this.deleteTransaction(deletedTransaction);
+        this.setIsOpen(false);
+        setTimeout(() => { this.closeBox() },5000);
       }
     },
-    updateBoxs: function(updated){
+    updateBoxs: async function(updated){
+      console.log(updated);
+
       if(updated == true && this.isOpen == false){
         var old = this.getBoxs;
         var updated = this.getSelectedBox
         this.updateBoxChange(old, updated);
       } else if(updated == true && this.isOpen == true){
+        var thisTransaction = this.getTransactions[0];
         var old = this.getBoxs;
         var updated = {id: this.getTransactions[0].uuid, status:"0"}
         this.updateBoxChange(old, updated);
+        setTimeout(() => { this.closeBox() },5000);
       } else if(updated == true && this.isOpen == true && this.passcodeAttemp == 3){
         var old = this.getBoxs;
         var updated = {id: this.getTransactions[0].uuid, status:"3"}
@@ -257,6 +269,9 @@ export default {
         this.setUpdateTransactions(true);
         this.clearAttemp();
       }
+    },
+    isOpen: function(updated){
+      console.log(updated)
     }
   },
   methods: {
@@ -274,8 +289,28 @@ export default {
       "setUpdateTransactions",
       "setIsOpen",
       "passcodeAttempInc",
-      "clearAttemp"
+      "clearAttemp",
+      "setPeripheral"
     ]),
+    bleConnect: function(id) {
+      return new Promise((resolve, reject) => {
+        ble.connect(id, (peripheral) => {
+          console.log("PERIPHERAL")
+          console.log(peripheral)
+          this.setPeripheral(peripheral);
+          return resolve(peripheral)
+        }),
+        (error) => {
+          return reject(error)
+        };
+      })
+    },
+    openBox: function() {
+      bleLb.turnONOFF(this.getPeripheral, "ON");
+    },
+    closeBox: function() {
+      bleLb.turnONOFF(this.getPeripheral, "OFF");
+    },
     checkPasscode: function(passcode, repasscode) {
       if (passcode == repasscode) {
         return true;
@@ -302,6 +337,7 @@ export default {
       try {
         var boxsRef = await this.$db.collection("boxs").doc("email").update({boxs})
         this.setUpdateBoxs(false);
+        this.setUpdateTransactions(true);
       } catch (error) {
         console.log(error)
       }
@@ -316,7 +352,6 @@ export default {
           var transactionsRef = await this.$db.collection("transactions").doc("email").set({transactions: oldTransactions})
           this.setUpdateTransactions(false);
         } else {
-          console.log(oldTransactions); 
           var updatedTransaction = payload2;
           var index = oldTransactions.map(function(element) { return element.uuid; }).indexOf(updatedTransaction.uuid);
           if (index != -1) {
@@ -342,6 +377,10 @@ export default {
   async beforeMount() {
     this.dialog = true;
     try {
+      // const x = await this.$db.collection("place").doc("Patong").collection("boxs").get()
+      // var s = [];
+      // x.forEach(element => { s.push(element.data()) });
+      //console.log(s)
       const boxlist = await this.$db.collection("boxs").doc("email").get();
       var allbox = boxlist.data().boxs;
       const transactions = await this.$db.collection("transactions").doc("email").get();

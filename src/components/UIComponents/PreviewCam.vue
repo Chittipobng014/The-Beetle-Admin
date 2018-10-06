@@ -150,12 +150,11 @@ export default {
               const verify = await this.axios(faceVerify);
               if (verify.data.isIdentical == true) {
                 this.setUpdateBoxs(true);
-                this.setUpdateTransactions(true);
                 this.loading = false;
                 this.hide();
                 this.alert = true;
                 setTimeout( () => {
-                  this.alert = false;
+                  //this.alert = false;
                   this.setMenu("hello");
                 }, 2000)
               } else {
@@ -228,6 +227,13 @@ export default {
   },
   computed: {
     ...mapGetters(["isMenu", "isStep", "getData", "isOpen", "getTransactions"])
+  },
+  watch:{
+    isOpen: function(updated){
+      if (updated == false) {
+        this.alert = false;
+      }
+    }
   },
   mounted() {
     this.show();

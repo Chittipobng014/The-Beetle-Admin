@@ -11,7 +11,7 @@
                 style="width: 95%; "
                 v-model="tel"
           ></v-text-field></div>
-            <div style="margin-bottom: 25px"><v-btn @click="this.rent" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
+            <div style="margin-bottom: 25px"><v-btn @click="this.rent()" style="width: 330px; height: 100px; background-color: #3B5998; color: #FFFFFF; font-size: 28px">Rent a box</v-btn></div>
             <div><v-btn @click="this.goback" style="width: 330px; height: 100px; font-size: 28px">Back to box select</v-btn></div>
         </div>
     </div>
@@ -19,8 +19,6 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { resolve } from 'path';
-import { reject } from 'q';
 
 export default {
   name: "boxrenting",
@@ -30,35 +28,38 @@ export default {
       tel: ""
     };
   },
-  mounted() {},
+  mounted() {
+    console.log("RENT")
+    this.rent()
+  },
   methods: {
     ...mapActions(["setMenu", "setStep", "setData", "clearSelectedBox", "setPeripheral"]),
     //Function
     bleConnect: function(id) {
       return new Promise((resolve, reject) => {
-        ble.connect(id, peripheral => {
+        ble.connect(id, (peripheral) => {
           console.log("PERIPHERAL")
           console.log(peripheral)
           this.setPeripheral(peripheral);
           return resolve(peripheral)
         }),
-        error => {
+        (error) => {
           return reject(error)
         };
       })
     },
     rent: async function() {
-      if (this.tel.length != 0) {
+      
+      // if (this.tel.length != 0) {
         try {
-        //var connect = await this.bleConnect(this.getSelectedBox.id);
-        console.log("CONNECT")
-        //console.log(connect);
+        console.log(this.getSelectedBox.id);
+        var connect = await this.bleConnect(this.getSelectedBox.id);
         this.setMenu("faceReg");
         this.setStep("3");
         } catch (error) {
           console.log(error)
         }    
-      }
+      // }
     },
     goback: function() {
       this.clearSelectedBox();
@@ -81,10 +82,6 @@ export default {
   },
   computed: {
     ...mapGetters(["isMenu", "isStep", "getData", "getSelectedBox"]),
-    faceid: function() {
-      let faceid = this.$refs.cam.faceid;
-      return faceid;
-    }
   },
   watch: {
     state: function(payload) {}
