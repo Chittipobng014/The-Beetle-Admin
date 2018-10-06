@@ -164,13 +164,12 @@ export default {
               checkin: timestamp,
               checkout: "",
               cost: this.getSelectedBox.price,
-              faceid: this.getFaceID,
+              faceid: 'this.getFaceID',
               name: this.getSelectedBox.name,
               password: this.getPasscode,
               telnumber: this.getTel,
               uuid: this.getSelectedBox.id
             };
-            var transactionsRef = this.$db.collection("transactions").doc("email")
             try {
               var oldTransactions = this.getTransactions;
               this.updateTransaction(oldTransactions, transaction)
@@ -222,11 +221,8 @@ export default {
     },
     updateBoxChange: async function(payload1, payload2) {
       let oldBoxs = payload1;
-      console.log(payload2); 
       var updatedBox = payload2;
-      console.log(updatedBox)
-      var index = oldBoxs.map(function(element) { console.log(element); return element.uuid; }).indexOf(updatedBox.id);
-      console.log(index);
+      var index = oldBoxs.map(function(element) { return element.uuid; }).indexOf(updatedBox.id);
       oldBoxs[index].status = updatedBox.status
       var boxs = this.getBoxs;
       this.setBoxs(oldBoxs);
@@ -244,8 +240,8 @@ export default {
       if (index != -1) {
         oldTransactions[index] = updatedTransaction
       }
-      this.setBoxs(boxs);
-      var transactions = this.getBoxs;
+      this.setTransactions(updatedTransaction);
+      var transactions = this.getTransactions;
       try {
         var boxsRef = await this.$db.collection("transactions").doc("email").update({transactions})
       } catch (error) {
@@ -258,7 +254,9 @@ export default {
       const boxlist = await this.$db.collection("boxs").doc("email").get();
       var allbox = boxlist.data().boxs;
       const transactions = await this.$db.collection("transactions").doc("email").get();
-      this.setTransactions(transactions);
+      var allTransaction = transactions.data().transactions
+      console.log(allTransaction)
+      this.setTransactions(allTransaction);
       this.setBoxs(allbox);
     } catch (error) {
       console.log(error);

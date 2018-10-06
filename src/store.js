@@ -104,6 +104,6 @@ export default new Vuex.Store({
     },
     setIsOpen: ( {commit }, payload) => commit("SET_ISOPEN", payload),
     clearSelectedBox: ( {commit }) => commit("CLEAR_SELECTEDBOX"),
-    setTransactions: ( {commit }, payload) => commit("SET_TRANSACTIONS")
+    setTransactions: ( {commit }, payload) => commit("SET_TRANSACTIONS", payload)
   }
 })
