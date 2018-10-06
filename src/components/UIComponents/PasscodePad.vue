@@ -86,7 +86,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["setMenu", "setStep", "setData", "setPasscode", "setRepasscode"]),
+    ...mapActions(["setMenu", "setStep", "setData", "setPasscode", "setRepasscode", "setIsOpen"]),
     addCode: function(num) {
       this.code.push(num);
     }
@@ -94,7 +94,7 @@ export default {
   watch: {
     passcode: function(change) {
       if (this.code.length == 6) {
-        if (this.isMenu == "passcode") {
+        if (this.isMenu == "passcode" && this.isOpen == false) {
           //set state and send data to Controller
           this.setPasscode(this.passcode);
           this.setMenu("setpasscode");
@@ -102,11 +102,17 @@ export default {
           setTimeout(() => {
             this.code = [];
           }, 500);
-        } else if (this.isMenu == "repasscode") {
+        } else if (this.isMenu == "repasscode" && this.isOpen == false) {
           //set state and send data to Controller
           this.setRepasscode(this.passcode);
           this.setMenu("checkpasscode");
           //clear slot
+          setTimeout(() => {
+            this.code = [];
+          }, 500);
+        } else if(this.isMenu == "passcode" && this.isOpen == true){
+          this.setPasscode(this.passcode);
+          this.setMenu("openByPasscode");
           setTimeout(() => {
             this.code = [];
           }, 500);
@@ -120,7 +126,8 @@ export default {
       "isStep",
       "getData",
       "getPasscode",
-      "getRepasscode"
+      "getRepasscode",
+      "isOpen"
     ]),
     passcode: function() {
       let passcode = "";

@@ -13,7 +13,8 @@ export default new Vuex.Store({
     boxs: [],
     transactions: [],
     updateBoxs: false,
-    updateTransactions: false
+    updateTransactions: false,
+    passcodeAttemp: 0
   },
   getters: {
     isMenu: state => state.status.menu,
@@ -29,9 +30,16 @@ export default new Vuex.Store({
     getBoxs: state => state.boxs,
     getTransactions: state => state.transactions,
     updateBoxs: state => state.updateBoxs,
-    updateTransactions: state => state.updateTransactions
+    updateTransactions: state => state.updateTransactions,
+    passcodeAttemp: state => state.passcodeAttemp
   },
   mutations: {
+    CLEAR_ATTEMP(state){
+      state.passcodeAttemp = 0;
+    },
+    INCREASE_ATTEMP(state){
+      state.passcodeAttemp++
+    },
     SET_UPDATEBOXS(state, payload){
       state.updateBoxs = payload;
     },
@@ -39,7 +47,6 @@ export default new Vuex.Store({
       state.updateTransactions = payload;
     },
     CLEAR_DETAILS(state){
-      state.status.menu = '';
       state.status.data.passcode = '';
       state.status.data.repasscode = '';
       state.peripheral = null;
@@ -115,7 +122,9 @@ export default new Vuex.Store({
         console.log("BOX_FETCHED")
     },
     setIsOpen: ( {commit }, payload) => commit("SET_ISOPEN", payload),
-    clearSelectedBox: ( {commit }) => commit("CLEAR_SELECTEDBOX"),
-    setTransactions: ( {commit }, payload) => commit("SET_TRANSACTIONS", payload)
+    clearSelectedBox: ({commit }) => commit("CLEAR_SELECTEDBOX"),
+    setTransactions: ({commit }, payload) => commit("SET_TRANSACTIONS", payload),
+    passcodeAttempInc: ({ commit }) => commit("INCREASE_ATTEMP"),
+    clearAttemp: ({ commit }) => commit("CLEAR_ATTEMP")
   }
 })

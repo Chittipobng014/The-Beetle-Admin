@@ -67,7 +67,7 @@ export default {
         //this.closeBox();
         this.setMenu("hello");
         this.setStep("0");
-        //this.clearDetails();
+        this.clearDetails();
         this.alert = false;
       }, 2000);
     },

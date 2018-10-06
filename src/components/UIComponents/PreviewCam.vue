@@ -1,6 +1,23 @@
 <template>
     <div>
       <v-dialog
+            v-model="facefail"
+            width="500"
+            >
+                <v-card>
+                    <v-card-title
+                    class="headline grey lighten-2 center"
+                    primary-title
+                    >
+                        No face deteced!!
+                    </v-card-title>
+
+                    <v-card-text class="center">
+                        Please use passcode
+                    </v-card-text>
+                </v-card>
+      </v-dialog>
+      <v-dialog
             v-model="alert"
             width="500"
             >
@@ -49,7 +66,8 @@ export default {
     return {
       faceid: "",
       alert: false,
-      loading: false
+      loading: false,
+      facefail: false
     };
   },
   methods: {
@@ -141,7 +159,11 @@ export default {
                   this.setMenu("hello");
                 }, 2000)
               } else {
-                //goto passcode
+                this.facefail = true;
+                setTimeout(() => {
+                  this.facefail = false;
+                  this.setMenu("passcode");
+                }, 3000)
               }
             } catch (error) {
               console.log(error)

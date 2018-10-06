@@ -84,6 +84,23 @@
             </v-card-text>
           </v-card>
         </v-dialog>
+        <v-dialog
+            v-model="alert"
+            width="500"
+            >
+                <v-card>
+                    <v-card-title
+                    class="headline grey lighten-2 center"
+                    primary-title
+                    >
+                        Thank you
+                    </v-card-title>
+
+                    <v-card-text class="center">
+                        Thank you for choosing us. Your box is opened
+                    </v-card-text>
+                </v-card>
+      </v-dialog>
     </v-app>
 </template>
 
@@ -111,7 +128,8 @@ export default {
     return {
       dialog: false,
       boxs: [],
-      passcode: { passcode: "", repasscode: "" }
+      passcode: { passcode: "", repasscode: "" },
+      alert: false
     };
   },
   computed: {
@@ -128,7 +146,8 @@ export default {
       "getFaceID",
       "isOpen",
       "updateTransactions",
-      "updateBoxs"
+      "updateBoxs",
+      "passcodeAttemp"
     ]),
     currentPage: function() {
       var page = this.$route.path.split("/")[1];
@@ -141,12 +160,10 @@ export default {
   },
   watch: {
     isMenu: async function(menu) {
-      //console.log(menu);
       if (menu == "setpasscode") {
         // set passcode
         if (this.getPasscode != "") {
           this.passcode.passcode = this.getPasscode;
-          //console.log(this.passcode.passcode);
           this.setMenu("repasscode");
           this.setStep("5");
         }
@@ -161,19 +178,16 @@ export default {
           );
           if (result == true) {
             // passcode match
-            //console.log(result);
             this.setUpdateTransactions(true);
             this.setUpdateBoxs(true);
             setTimeout(() => {
               this.dialog = false;
-              //save passcode to back-end
               this.setMenu("receipt");
               this.setStep("6");
             }, 1000);
 
           } else {
             // passcode not match
-            //console.log(result);
             setTimeout(() => {
               console.log("not match");
               this.setMenu("passcode");
@@ -182,30 +196,42 @@ export default {
             }, 1000);
           }
         }
+      } else if(this.isMenu == "openByPasscode" && this.isOpen == true){
+        var passcode = this.getPasscode;
+        var transactionVadilate = this.checkTransactionPasscode(passcode);
+        if (transactionVadilate == true) {
+          this.alert = true;
+          this.setUpdateTransactions(true);
+          this.setUpdateBoxs(true);
+          setTimeout(() => {
+            this.setMenu("hello");
+            this.setIsOpen(false);
+            this.alert = false;
+          }, 2000)
+        } else {
+          this.setMenu("passcode");
+          this.passcodeAttempInc();
+        }
       }
     },
     updateTransactions: function(updated){
-      console.log("THIS IS");
-      console.log(updated);
       if (updated == true && this.isOpen == false) {
         var timestamp = Number(new Date());
         var transaction = {
-        checkin: timestamp,
-        checkout: "",
-        cost: this.getSelectedBox.price,
-        faceid: this.getFaceID,
-        name: this.getSelectedBox.name,
-        password: this.getPasscode,
-        telnumber: "0983439189",
-        uuid: this.getSelectedBox.id
+          checkin: timestamp,
+          checkout: "",
+          cost: this.getSelectedBox.price,
+          faceid: this.getFaceID,
+          name: this.getSelectedBox.name,
+          password: this.getPasscode,
+          telnumber: "0983439189",
+          uuid: this.getSelectedBox.id
         };
         var oldTransactions = this.getTransactions;
         this.updateTransaction(oldTransactions, transaction);
       } else if(updated == true && this.isOpen == true){
         var thisTransaction = this.getTransactions[0]
         var deletedTransaction = this.getTransactions.filter( (transaction) => transaction.uuid != thisTransaction.uuid);
-        console.log("THIS IS");
-        console.log(updated);
         this.deleteTransaction(deletedTransaction);
       }
     },
@@ -218,6 +244,18 @@ export default {
         var old = this.getBoxs;
         var updated = {id: this.getTransactions[0].uuid, status:"0"}
         this.updateBoxChange(old, updated);
+      } else if(updated == true && this.isOpen == true && this.passcodeAttemp == 3){
+        var old = this.getBoxs;
+        var updated = {id: this.getTransactions[0].uuid, status:"3"}
+        this.updateBoxChange(old, updated);
+        this.clearAttemp()
+      }
+    },
+    passcodeAttemp: function(updated){
+      if (updated == 3) {
+        this.setMenu("hello");
+        this.setUpdateTransactions(true);
+        this.clearAttemp();
       }
     }
   },
@@ -234,10 +272,21 @@ export default {
       "setTransactions",
       "setUpdateBoxs",
       "setUpdateTransactions",
-      "setIsOpen"
+      "setIsOpen",
+      "passcodeAttempInc",
+      "clearAttemp"
     ]),
     checkPasscode: function(passcode, repasscode) {
       if (passcode == repasscode) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    checkTransactionPasscode: function(passcode){
+      var passcode = passcode;
+      var transactionPasscode = this.getTransactions[0].password;
+      if (passcode == transactionPasscode) {
         return true;
       } else {
         return false;
