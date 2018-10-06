@@ -9,7 +9,8 @@
     "start": "npm run dev",
     "build:watch": "cross-env WEBPACK_WATCH=true node build/build.js",
     "browser": "node build/build.js && cordova run browser",
-    "android": "node build/build.js && cordova run android"
+    "android": "node build/build.js && cordova run android",
+    "ios": "node build/build.js && cordova build ios"
   },
   "dependencies": {
     "axios": "^0.18.0",

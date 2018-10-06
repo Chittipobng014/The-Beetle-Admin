@@ -53,7 +53,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["setMenu", "setStep", "setData", "setFaceID", "setIsOpen"]),
+    ...mapActions(["setMenu", "setStep", "setData", "setFaceID", "setIsOpen", "setUpdateBoxs", "setUpdateTransactions"]),
     startCameraAbove: function() {
       CameraPreview.startCamera({
         x: 50,
@@ -98,9 +98,6 @@ export default {
           var photoRef = this.$storage.child("photos/" + timestamp + ".jpeg");
           const upload = await photoRef.put(blob);
           const photoUrl = await photoRef.getDownloadURL();
-          console.log("DOWNLOAD");
-          console.log(photoUrl);
-
           var facedetect = {
             url:
               "https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false",
@@ -114,10 +111,7 @@ export default {
           };
 
           const face = await this.axios(facedetect);
-          console.log(face);
           var faceId = face.data[0].faceId;
-          console.log("FACE");
-          console.log(faceId);
           if (this.isOpen == true) {
             let faceId1 = this.getTransactions[0].faceid;
             let faceId2 = faceId;
@@ -136,14 +130,14 @@ export default {
 
             try {
               const verify = await this.axios(faceVerify);
-              console.log(JSON.stringify(verify));
               if (verify.data.isIdentical == true) {
+                this.setUpdateBoxs(true);
+                this.setUpdateTransactions(true);
                 this.loading = false;
                 this.hide();
                 this.alert = true;
                 setTimeout( () => {
                   this.alert = false;
-                  this.setIsOpen(false);
                   this.setMenu("hello");
                 }, 2000)
               } else {

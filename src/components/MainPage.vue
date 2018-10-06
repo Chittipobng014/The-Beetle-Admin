@@ -126,7 +126,9 @@ export default {
       "getBoxs",
       "getTransactions",
       "getFaceID",
-      "isOpen"
+      "isOpen",
+      "updateTransactions",
+      "updateBoxs"
     ]),
     currentPage: function() {
       var page = this.$route.path.split("/")[1];
@@ -160,25 +162,8 @@ export default {
           if (result == true) {
             // passcode match
             //console.log(result);
-            var timestamp = Number(new Date());
-            var transaction = {
-              checkin: timestamp,
-              checkout: "",
-              cost: this.getSelectedBox.price,
-              faceid: this.getFaceID,
-              name: this.getSelectedBox.name,
-              password: this.getPasscode,
-              telnumber: "0983439189",
-              uuid: this.getSelectedBox.id
-            };
-            var oldTransactions = this.getTransactions;
-            console.log("!&$");
-            console.log(oldTransactions)
-            this.updateTransaction(oldTransactions, transaction)
-            var old = this.getBoxs;
-            var updated = this.getSelectedBox
-            this.updateBoxChange(old, updated);
-            
+            this.setUpdateTransactions(true);
+            this.setUpdateBoxs(true);
             setTimeout(() => {
               this.dialog = false;
               //save passcode to back-end
@@ -198,6 +183,42 @@ export default {
           }
         }
       }
+    },
+    updateTransactions: function(updated){
+      console.log("THIS IS");
+      console.log(updated);
+      if (updated == true && this.isOpen == false) {
+        var timestamp = Number(new Date());
+        var transaction = {
+        checkin: timestamp,
+        checkout: "",
+        cost: this.getSelectedBox.price,
+        faceid: this.getFaceID,
+        name: this.getSelectedBox.name,
+        password: this.getPasscode,
+        telnumber: "0983439189",
+        uuid: this.getSelectedBox.id
+        };
+        var oldTransactions = this.getTransactions;
+        this.updateTransaction(oldTransactions, transaction);
+      } else if(updated == true && this.isOpen == true){
+        var thisTransaction = this.getTransactions[0]
+        var deletedTransaction = this.getTransactions.filter( (transaction) => transaction.uuid != thisTransaction.uuid);
+        console.log("THIS IS");
+        console.log(updated);
+        this.deleteTransaction(deletedTransaction);
+      }
+    },
+    updateBoxs: function(updated){
+      if(updated == true && this.isOpen == false){
+        var old = this.getBoxs;
+        var updated = this.getSelectedBox
+        this.updateBoxChange(old, updated);
+      } else if(updated == true && this.isOpen == true){
+        var old = this.getBoxs;
+        var updated = {id: this.getTransactions[0].uuid, status:"0"}
+        this.updateBoxChange(old, updated);
+      }
     }
   },
   methods: {
@@ -210,7 +231,10 @@ export default {
       "setBoxs",
       "clearSelectedBox",
       "updateBoxChange",
-      "setTransactions"
+      "setTransactions",
+      "setUpdateBoxs",
+      "setUpdateTransactions",
+      "setIsOpen"
     ]),
     checkPasscode: function(passcode, repasscode) {
       if (passcode == repasscode) {
@@ -228,6 +252,7 @@ export default {
       this.setBoxs(oldBoxs);
       try {
         var boxsRef = await this.$db.collection("boxs").doc("email").update({boxs})
+        this.setUpdateBoxs(false);
       } catch (error) {
         console.log(error)
       }
@@ -239,9 +264,8 @@ export default {
           oldTransactions.push(payload2)
           this.setTransactions(oldTransactions);
           var transactions = this.getTransactions;
-          console.log("TTTT1");
-          console.log(JSON.stringify(transactions));
           var transactionsRef = await this.$db.collection("transactions").doc("email").set({transactions: oldTransactions})
+          this.setUpdateTransactions(false);
         } else {
           console.log(oldTransactions); 
           var updatedTransaction = payload2;
@@ -251,15 +275,20 @@ export default {
           }
           this.setTransactions(oldTransactions);
           var transactions = this.getTransactions;
-          console.log("TTTT2");
-          console.log(JSON.stringify(transactions));
           var transactionsRef = await this.$db.collection("transactions").doc("email").set({transactions: oldTransactions})
+          this.setUpdateTransactions(false);
         }
       } catch (error) {
         console.log("error")
         console.log(error)
       }
     },
+    deleteTransaction: async function(payload){
+      var newTransactions = payload;
+      var transactionsRef = await this.$db.collection("transactions").doc("email").set({transactions: newTransactions})
+      this.setIsOpen(false);
+      this.setUpdateTransactions(false);
+    }
   },
   async beforeMount() {
     this.dialog = true;
@@ -268,12 +297,9 @@ export default {
       var allbox = boxlist.data().boxs;
       const transactions = await this.$db.collection("transactions").doc("email").get();
       var allTransaction = transactions.data().transactions
-      console.log("allTransaction")
-      console.log(allTransaction)
       this.setTransactions(allTransaction);
       this.setBoxs(allbox);
     } catch (error) {
-      console.log("error259");
       console.log(error);
     }
     

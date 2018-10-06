@@ -11,7 +11,9 @@ export default new Vuex.Store({
     faceID: null,
     tel: null,
     boxs: [],
-    transactions: []
+    transactions: [],
+    updateBoxs: false,
+    updateTransactions: false
   },
   getters: {
     isMenu: state => state.status.menu,
@@ -25,9 +27,17 @@ export default new Vuex.Store({
     getFaceID: state => state.faceID,
     getTel: state => state.tel,
     getBoxs: state => state.boxs,
-    getTransactions: state => state.transactions
+    getTransactions: state => state.transactions,
+    updateBoxs: state => state.updateBoxs,
+    updateTransactions: state => state.updateTransactions
   },
   mutations: {
+    SET_UPDATEBOXS(state, payload){
+      state.updateBoxs = payload;
+    },
+    SET_UPDATETRANSACTIONS(state, payload){
+      state.updateTransactions = payload;
+    },
     CLEAR_DETAILS(state){
       state.status.menu = '';
       state.status.data.passcode = '';
@@ -87,6 +97,8 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setUpdateBoxs: ({ commit }, payload) => commit("SET_UPDATEBOXS", payload),
+    setUpdateTransactions: ({ commit }, payload) => commit("SET_UPDATETRANSACTIONS", payload),
     clearDetails: ( {commit} ) => commit("CLEAR_DETAILS"),
     setMenu: ({ commit }, payload) => commit("SET_MENU", payload),
     setStep: ({ commit }, payload) => commit("SET_STEP", payload),
