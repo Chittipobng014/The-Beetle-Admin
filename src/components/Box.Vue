@@ -32,14 +32,14 @@ export default {
   methods: {
     ...mapActions(["setMenu", "setStep", "setData", "setSelectedBox"]),
     next: async function() {
-      let box = {id: "B4:E6:2D:97:F8:47", name: "Beetle Box No.3", price: "20", status: "0"}
+      let box = {uuid: "0E84C1D5-4779-BB1A-872A-2390CF7343BB7", name: "Beetle Box No.3", price: "20", status: "0"}
       const allbox = await this.$db
       .collection("boxs")
       .doc("email")
       .get();
       var boxs = allbox.data().boxs;
       console.log(boxs)
-      var index = boxs.map(function(element) { return element.id; }).indexOf(this.id);
+      var index = boxs.map(function(element) { return element.uuid; }).indexOf(box.uuid);
       if (index != -1) {
         boxs.splice(index, 1);
         this.sta = false;
