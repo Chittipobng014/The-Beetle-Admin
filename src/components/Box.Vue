@@ -1,7 +1,13 @@
 <template>
 <div>
-    <v-card flat tile class="h-center" style="text-align:center; margin: 0px;  height: 21vh;  background-color: #33c0ca">        
-        <v-btn @click="next()">click</v-btn>
+    <v-card flat tile class="h-center" style="text-align:center; height: 21vh;  background-color: #33c0ca; padding: 5px">   
+        <div style="margin-top: 15px; font-size: 25px">{{name}}</div>
+        <transition>
+          <div @click="next()" style="margin-top: 40px" >
+            <img v-if="sta == false" width="64px" src="../assets/plus.png" alt="">
+            <img v-if="sta == true" width="64px" src="../assets/minus.png" alt="">
+          </div>
+        </transition>
     </v-card>
 </div>
 </template>
@@ -16,26 +22,46 @@ export default {
     status: String,
     uuid: String,
     price: Number,
-    index: Number
   },
   data() {
     return {
-      id: this.uuid
+      id: this.uuid,
+      sta: false
     };
   },
   methods: {
     ...mapActions(["setMenu", "setStep", "setData", "setSelectedBox"]),
-
-    next: function() {
-      let box = {id: this.id, name: this.name, price: this.price, status: "1"}
-      this.setSelectedBox(box)
-      this.setMenu("renting");
-      this.setStep("2");
-
+    next: async function() {
+      let box = {id: "B4:E6:2D:97:F8:47", name: "Beetle Box No.3", price: "20", status: "0"}
+      const allbox = await this.$db
+      .collection("boxs")
+      .doc("email")
+      .get();
+      var boxs = allbox.data().boxs;
+      console.log(boxs)
+      var index = boxs.map(function(element) { return element.id; }).indexOf(this.id);
+      if (index != -1) {
+        boxs.splice(index, 1);
+        this.sta = false;
+        try {
+          var boxsRef = await this.$db.collection("boxs").doc("email").update({boxs})
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        boxs.push(box);
+        try {
+          this.sta = true;
+          var boxsRef = await this.$db.collection("boxs").doc("email").update({boxs})
+        } catch (error) {
+          console.log(error)
+        }
+      }
     }
   },
-  mounted() {},
-
+  beforeMount() {
+    console.log(this.id)
+  },
   computed: {
     ...mapGetters(["isMenu", "isStep", "data"])
   }

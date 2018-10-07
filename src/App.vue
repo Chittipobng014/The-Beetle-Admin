@@ -1,17 +1,60 @@
 <template>
-  <transition>
-    <main-page></main-page>
-  </transition>
+  <div>
+    <component :is="comp"></component>
+    <v-dialog
+          v-model="dialog"
+          persistent
+          width="300"
+          lazy
+        >
+          <v-card
+            color="indigo"
+            dark
+          >
+            <v-card-text>
+              Loading...
+              <v-progress-linear
+                indeterminate
+                color="white"
+                class="mb-0"
+              ></v-progress-linear>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+  </div>
 </template>
 
 <script>
-import MainPage from './components/MainPage'
+import BoxList from "./components/BoxList";
+import { mapActions, mapGetters } from "vuex";
+import { setTimeout } from 'timers';
+
 export default {
   name: "app",
-  async beforeMount() {
+  data() {
+    return {
+      comp: null,
+      dialog: false
+    }
   },
-  components:{
-    MainPage
+  async beforeMount() {
+    this.dialog = true
+    const fetch = await this.$db
+      .collection("boxs")
+      .doc("email")
+      .get();
+    this.setBoxs(fetch.data());
+    setTimeout(() => {
+      this.dialog = false;
+      this.comp = 'start'
+    }, 3000);
+    
+  },
+  components: {
+    start :BoxList
+  },
+  methods: {
+    ...mapActions(["setBoxs"])
   }
 };
 </script>
