@@ -27,7 +27,6 @@
 <script>
 import BoxList from "./components/BoxList";
 import { mapActions, mapGetters } from "vuex";
-import { setTimeout } from 'timers';
 
 export default {
   name: "app",
@@ -40,20 +39,27 @@ export default {
   async beforeMount() {
     this.dialog = true
     this.fetchBoxes()
-    setTimeout(() => {
-      this.dialog = false;
-      this.views = 'start'
-    }, 3000);
-    
   },
   components: {
     start :BoxList
   },
   methods: {
     ...mapActions([
-      "setBoxs",
       "fetchBoxes"
     ])
+  },
+  computed: {
+    ...mapGetters([
+      "isBoxFetching"
+    ])
+  },
+  watch: {
+    isBoxFetching: function(state){
+      if (state == false) {
+        this.views = 'start'
+        this.dialog = false;
+      }
+    }
   }
 };
 </script>

@@ -20,46 +20,22 @@ export default {
   props: {
     name: String,
     status: String,
-    uuid: String,
+    id: String,
     price: Number,
   },
   data() {
     return {
-      id: this.uuid,
       sta: false
     };
   },
   methods: {
     ...mapActions(["setMenu", "setStep", "setData", "setSelectedBox"]),
-    next: async function() {
-      let box = {uuid: "0E84C1D5-4779-BB1A-872A-2390CF7343BB7", name: "Beetle Box No.3", price: "20", status: "0"}
-      const allbox = await this.$db
-      .collection("boxs")
-      .doc("email")
-      .get();
-      var boxs = allbox.data().boxs;
-      console.log(boxs)
-      var index = boxs.map(function(element) { return element.uuid; }).indexOf(box.uuid);
-      if (index != -1) {
-        boxs.splice(index, 1);
-        this.sta = false;
-        try {
-          var boxsRef = await this.$db.collection("boxs").doc("email").update({boxs})
-        } catch (error) {
-          console.log(error)
-        }
-      } else {
-        boxs.push(box);
-        try {
-          this.sta = true;
-          var boxsRef = await this.$db.collection("boxs").doc("email").update({boxs})
-        } catch (error) {
-          console.log(error)
-        }
-      }
+    next: () => {
+
     }
+    
   },
-  beforeMount() {
+  mounted() {
     console.log(this.id)
   },
   computed: {

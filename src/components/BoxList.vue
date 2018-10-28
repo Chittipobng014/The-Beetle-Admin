@@ -1,8 +1,8 @@
 <template>
     <div style="max-height: 100vh; min-height: 100vh;;background-color: #DBD8D8;" id="scroll-target" class="scroll-y">
       <v-layout row wrap>
-        <v-flex class="flex-padding" v-for="box in getBoxs.boxs" :key="box.uuid" xs3>
-          <box style="margin: 5% 5% 5% 5%;" v-bind:price="box.price" v-bind:name="box.name" v-bind:status="box.status" v-bind:uuid="box.uuid"></box>
+        <v-flex class="flex-padding" v-for="box in registeredBoxes" :key="box.uuid" xs3>
+          <box style="margin: 5% 5% 5% 5%;" v-bind:price="box.price" v-bind:name="box.name" v-bind:status="box.status" v-bind:id="box.id"></box>
         </v-flex>
       </v-layout>
     </div> 
@@ -16,7 +16,7 @@ export default {
   name: "boxlist",
   data: () => {
     return {
-      boxs: null
+      
     };
   },
   methods: {
@@ -24,16 +24,18 @@ export default {
 
   },
   async beforeMount() {
-    console.log(this.getBoxs)
+
   },
   components: {
     Box
   },
   mounted() {
-    
+    console.log(this.registeredBoxes)
   },
   computed: {
-    ...mapGetters(["getBoxs"])
+    ...mapGetters([
+      "registeredBoxes"
+    ])
   }
 };
 </script>

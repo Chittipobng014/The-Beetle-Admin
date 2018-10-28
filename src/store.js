@@ -8,7 +8,8 @@ export default new Vuex.Store({
   state: {
     view: 'start',
     registeredBoxes: [],
-    allBoxes:[]
+    allBoxes:[],
+    isBoxFetching: true
   },
   getters: {
     view: state => state.view,
@@ -20,7 +21,8 @@ export default new Vuex.Store({
         })
       })
       return unregis
-    }
+    },
+    isBoxFetching: state => state.isBoxFetching
   },
   mutations: {
     SET_VIEW(state, payload){
@@ -31,6 +33,9 @@ export default new Vuex.Store({
     },
     FETCH_BOXES(state, payload){
       state.registeredBoxes = payload
+    },
+    SET_BOXFETCHING(state, payload){
+      state.isBoxFetching = payload
     }
   },
   actions: {
@@ -38,9 +43,11 @@ export default new Vuex.Store({
     addScanedBoxes: ({ commit }, payload) => commit("ADD_BOX", payload),
     fetchBoxes: async ({ commit }) => {
       try {
+        commit("SET_BOXFETCHING", true)
         const boxes = await api.boxes({branchid: 1})
         console.log(boxes)
         commit("FETCH_BOXES", boxes)
+        commit("SET_BOXFETCHING", false)
       } catch (error) {
         console.log(error)
       }
