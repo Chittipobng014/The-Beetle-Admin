@@ -1,6 +1,6 @@
 <template>
   <div>
-    <component :is="comp"></component>
+    <component :is="views"></component>
     <v-dialog
           v-model="dialog"
           persistent
@@ -33,20 +33,16 @@ export default {
   name: "app",
   data() {
     return {
-      comp: null,
+      views: null,
       dialog: false
     }
   },
   async beforeMount() {
     this.dialog = true
-    const fetch = await this.$db
-      .collection("boxs")
-      .doc("email")
-      .get();
-    this.setBoxs(fetch.data());
+    this.fetchBoxes()
     setTimeout(() => {
       this.dialog = false;
-      this.comp = 'start'
+      this.views = 'start'
     }, 3000);
     
   },
@@ -54,7 +50,10 @@ export default {
     start :BoxList
   },
   methods: {
-    ...mapActions(["setBoxs"])
+    ...mapActions([
+      "setBoxs",
+      "fetchBoxes"
+    ])
   }
 };
 </script>
