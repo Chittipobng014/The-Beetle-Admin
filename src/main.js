@@ -23,9 +23,9 @@ const app = new Vue({
     ...mapActions(['addScannedBoxes']),
     init: function() {
       ble.startScan([], function(device) {
+        console.log(JSON.stringify(device));
         if (device.name.startsWith("Beetle")) {
           //this.addScannedBoxes({...device})
-          console.log(JSON.stringify(device));
         }
       }, function (err) {
         console.log(err);
