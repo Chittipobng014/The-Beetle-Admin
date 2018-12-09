@@ -2,7 +2,6 @@ import '@babel/polyfill'
 import Vue from 'vue'
 import './plugins/vuetify'
 import router from './router'
-import { mapActions, mapGetters } from "vuex";
 import store from './store'
 import App from './App'
 import axios from 'axios'
@@ -17,28 +16,21 @@ const app = new Vue({
   el: '#app',
   router,
   store,
-  template: '<App/>',
+  template: '<App :ready="ready"/>',
   components: { App },
-  methods:{
-    ...mapActions(['addScannedBoxes']),
-    init: function() {
-      ble.startScan([], function(device) {
-        console.log(JSON.stringify(device));
-        if (device.name.startsWith("Beetle")) {
-          //this.addScannedBoxes({...device})
-        }
-      }, function (err) {
-        console.log(err);
-      });
-      setTimeout(ble.stopScan,
-        10000,
-        function() { },
-        function() { }
-      );
+  data() {
+    return {
+      ready: false
+    }
+  },
+  methods: {
+    onReady: function () {
+      StatusBar.hide()
+      this.ready = true
     }
   }
 })
 
-document.addEventListener('deviceready', app.init, function (err) {
+document.addEventListener('deviceready', app.onReady, function (err) {
   console.log(err);
 })

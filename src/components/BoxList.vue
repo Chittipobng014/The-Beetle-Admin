@@ -1,11 +1,28 @@
 <template>
-    <div style="max-height: 100vh; min-height: 100vh;;background-color: #DBD8D8;" id="scroll-target" class="scroll-y">
-      <v-layout row wrap>
-        <v-flex class="flex-padding" v-for="box in registeredBoxes" :key="box.uuid" xs3>
-          <box style="margin: 5% 5% 5% 5%;" v-bind:price="box.price" v-bind:name="box.name" v-bind:status="box.status" v-bind:id="box.id"></box>
-        </v-flex>
-      </v-layout>
-    </div> 
+  <div style="max-height: 100vh; min-height: 100vh;" id="scroll-target" class="scroll-y">
+    <v-layout row wrap>
+      <v-flex v-if="menu == 'addnew'" class="flex-padding" v-for="box in unRegisteredBoxes" :key="box.uuid" xs4>
+        <box
+          style="margin: 5% 5% 5% 5%;"
+          :price="box.price"
+          :name="box.name"
+          :status="box.status"
+          :id="box.id"
+          :size="box.size"
+        ></box>
+      </v-flex>
+      <v-flex v-if="menu == 'manage'" class="flex-padding" v-for="box in registeredBoxes" :key="box.uuid" xs4>
+        <box
+          style="margin: 5% 5% 5% 5%;"
+          :price="box.price"
+          :name="box.name"
+          :status="box.status"
+          :id="box.id"
+          :size="box.size"
+        ></box>
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
  
 <script>
@@ -16,26 +33,35 @@ export default {
   name: "boxlist",
   data: () => {
     return {
-      
+      boxes: null
     };
   },
   methods: {
-    ...mapActions(["setMenu", "setStep", "setData"]),
-
+    ...mapActions(["setMenu", "setStep", "setData"])
   },
-  async beforeMount() {
-
+  beforeMount() {
+    if (this.menu == "addnew") {
+      //this.boxes = this.unRegisteredBoxes;
+    } else if (this.menu == "manage") {
+      //this.boxes = this.registeredBoxes;
+    }
   },
   components: {
     Box
   },
-  mounted() {
-    console.log(this.registeredBoxes)
-  },
+  mounted() {},
   computed: {
-    ...mapGetters([
-      "registeredBoxes"
-    ])
+    ...mapGetters(["registeredBoxes", "menu", "unRegisteredBoxes"])
+  },
+  watch: {
+    unRegisteredBoxes: function(changed) {
+			console.log("​mounted -> changed", changed)
+      //this.boxes = changed;
+    },
+    registeredBoxes: function(changed) {
+			console.log("​mounted -> changed", changed)
+      //this.boxes = changed;
+    }
   }
 };
 </script>
